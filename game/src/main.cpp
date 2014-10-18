@@ -4,6 +4,7 @@
 
 using namespace std;
 
+
 Mesh* createQuad() {
 	// Create the quad mesh. Example of not indexed mesh.
 	Vertex::Format format({
@@ -53,7 +54,7 @@ Mesh* createCube() {
 }
 
 void printFullscreenModes() {
-	const auto& modes = Screen::getFullscreenModes();
+	const auto& modes = Window::getFullscreenModes();
 	for(int i = 0; i < modes.size(); i++) {
 		cout<<i<<": "<<modes[i].getWidth()<<" "<<modes[i].getHeight()<<endl;
 	}
@@ -65,7 +66,7 @@ int main() {
 	printFullscreenModes();
 
 	// Create screen
-	Screen screen (Screen::DisplayMode::createWindowedMode(800, 600));
+	Window window (Window::DisplayMode::createWindowedMode(800, 600));
 
 	unique_ptr<Mesh> quad(createQuad());
 	unique_ptr<ShaderProgram> quadShader(ShaderProgram::loadFromFile("assets/quad.vert", "assets/quad.frag"));
@@ -73,20 +74,20 @@ int main() {
 	unique_ptr<ShaderProgram> cubeShader(ShaderProgram::loadFromFile("assets/cube.vert", "assets/cube.frag"));
 
 	while(true) {
-		screen.update();
+		window.update();
 
 		if(Keyboard::pressed(Keyboard::Escape))
 			break;
 
 		if(Keyboard::pressed(Keyboard::Q))
-			screen.setDisplayMode(Screen::getFullscreenModes()[0]);
+			window.setDisplayMode(Window::getFullscreenModes()[0]);
 		if(Keyboard::pressed(Keyboard::W))
-			screen.setDisplayMode(Screen::DisplayMode::createWindowedMode(800, 600));
+			window.setDisplayMode(Window::DisplayMode::createWindowedMode(800, 600));
 		if(Keyboard::pressed(Keyboard::E))
-			screen.setDisplayMode(Screen::getFullscreenModes()[12]);
+			window.setDisplayMode(Window::getFullscreenModes()[12]);
 
 		// Set viewport
-		glViewport(0, 0, screen.getSize().x, screen.getSize().y);
+		glViewport(0, 0, window.getSize().x, window.getSize().y);
 		// Clear screen.
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -94,14 +95,14 @@ int main() {
 		// Draw fullscreen quad with fancy shader.
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		quadShader->uniform("t")->set(Clock::getSeconds());
-		quadShader->uniform("resolution")->set(vec2f(screen.getSize()));
+		quadShader->uniform("resolution")->set(vec2f(window.getSize()));
 		quad->draw(quadShader.get());
 
 		// Draw demoscene-ish crazy wireframe cube. :)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		// Projection matrix.
-		float aspect = float(screen.getSize().x)/screen.getSize().y;
+		float aspect = float(window.getSize().x)/window.getSize().y;
 		mat4f mvp = glm::perspective(60.0f, aspect, 0.01f, 100.0f);
 
 		// Modelview matrix. (We multiply it directly into the MVP)
@@ -113,6 +114,6 @@ int main() {
 		cubeShader->uniform("mvp")->set(mvp);
 		cube->draw(cubeShader.get());
 
-		screen.swapBuffers();
+		window.swapBuffers();
 	}
 }
