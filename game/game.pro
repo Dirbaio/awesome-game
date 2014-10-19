@@ -15,4 +15,5 @@ OTHER_FILES += \
     ../assets/quad.vert \
     ../assets/quad.frag \
     ../assets/cube.vert \
-    ../assets/cube.frag
+    ../assets/cube.frag \
+    ../assets/awesomeface.png

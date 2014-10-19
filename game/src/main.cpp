@@ -12,12 +12,19 @@ Mesh* createQuad() {
 	});
 
 	vector<vec2f> data = {
-		vec2f(1, -1), vec2f(1, 1), vec2f(-1, 1),
-		vec2f(-1, 1), vec2f(-1, -1), vec2f(1, -1)
+		vec2f(1, -1),
+		vec2f(1, 1),
+		vec2f(-1, 1),
+		vec2f(-1, -1)
 	};
 
-	Mesh* quad = Mesh::loadEmpty(format);
-	quad->setVertexData(&data[0], 6);
+	vector<unsigned int> indices = {
+		0, 1, 2, 3, 0, 2
+	};
+
+	Mesh* quad = Mesh::loadEmpty(format, Mesh::Indexed);
+	quad->setVertexData(&data[0], data.size());
+	quad->setVertexIndices(&indices[0], indices.size());
 	quad->setPrimitiveType(Mesh::TRIANGLES);
 
 	return quad;
@@ -27,28 +34,66 @@ Mesh* createCube() {
 	// Create cube mesh. Example of indexed mesh.
 
 	Vertex::Format format({
-		Vertex::Element(Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 3))
+		Vertex::Element(Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 3)),
+		Vertex::Element(Vertex::Element(Vertex::Attribute::Normal, Vertex::Element::Float, 3)),
+		Vertex::Element(Vertex::Element(Vertex::Attribute::TexCoord, Vertex::Element::Float, 2))
 	});
 
-	vector<vec3f> cubeVertices = {
-		vec3f(-1.0, -1.0, 1.0),
-		vec3f(1.0, -1.0, 1.0),
-		vec3f(-1.0, 1.0, 1.0),
-		vec3f(1.0, 1.0, 1.0),
-		vec3f(-1.0, -1.0, -1.0),
-		vec3f(1.0, -1.0, -1.0),
-		vec3f(-1.0, 1.0, -1.0),
-		vec3f(1.0, 1.0, -1.0),
+	struct vtx {
+		vec3f position;
+		vec3f normal;
+		vec2f texcoord;
 	};
 
-	vector<unsigned int> cubeIndices = {
-		0, 1, 2, 3, 7, 1, 5, 4, 7, 6, 2, 4, 0, 1
+	vector<vtx> cubeVertices = {
+		vtx{vec3f(-1.0,  1.0,  1.0), vec3f(-1.0, 0.0, 0.0), vec2f(1.0, 0.0)},
+		vtx{vec3f(-1.0,  1.0, -1.0), vec3f(-1.0, 0.0, 0.0), vec2f(0.0, 0.0)},
+		vtx{vec3f(-1.0, -1.0, -1.0), vec3f(-1.0, 0.0, 0.0), vec2f(0.0, 1.0)},
+		vtx{vec3f(-1.0, -1.0, -1.0), vec3f(-1.0, 0.0, 0.0), vec2f(0.0, 1.0)},
+		vtx{vec3f(-1.0, -1.0,  1.0), vec3f(-1.0, 0.0, 0.0), vec2f(1.0, 1.0)},
+		vtx{vec3f(-1.0,  1.0,  1.0), vec3f(-1.0, 0.0, 0.0), vec2f(1.0, 0.0)},
+
+		vtx{vec3f( 1.0, -1.0, -1.0), vec3f( 1.0, 0.0, 0.0), vec2f(1.0, 1.0)},
+		vtx{vec3f( 1.0,  1.0, -1.0), vec3f( 1.0, 0.0, 0.0), vec2f(1.0, 0.0)},
+		vtx{vec3f( 1.0,  1.0,  1.0), vec3f( 1.0, 0.0, 0.0), vec2f(0.0, 0.0)},
+		vtx{vec3f( 1.0,  1.0,  1.0), vec3f( 1.0, 0.0, 0.0), vec2f(0.0, 0.0)},
+		vtx{vec3f( 1.0, -1.0,  1.0), vec3f( 1.0, 0.0, 0.0), vec2f(0.0, 1.0)},
+		vtx{vec3f( 1.0, -1.0, -1.0), vec3f( 1.0, 0.0, 0.0), vec2f(1.0, 1.0)},
+
+		vtx{vec3f(-1.0, -1.0, -1.0), vec3f(0.0, 0.0, -1.0), vec2f(1.0, 1.0)},
+		vtx{vec3f(-1.0,  1.0, -1.0), vec3f(0.0, 0.0, -1.0), vec2f(1.0, 0.0)},
+		vtx{vec3f( 1.0,  1.0, -1.0), vec3f(0.0, 0.0, -1.0), vec2f(0.0, 0.0)},
+		vtx{vec3f( 1.0,  1.0, -1.0), vec3f(0.0, 0.0, -1.0), vec2f(0.0, 0.0)},
+		vtx{vec3f( 1.0, -1.0, -1.0), vec3f(0.0, 0.0, -1.0), vec2f(0.0, 1.0)},
+		vtx{vec3f(-1.0, -1.0, -1.0), vec3f(0.0, 0.0, -1.0), vec2f(1.0, 1.0)},
+
+		vtx{vec3f( 1.0,  1.0,  1.0), vec3f(0.0, 0.0,  1.0), vec2f(1.0, 0.0)},
+		vtx{vec3f(-1.0,  1.0,  1.0), vec3f(0.0, 0.0,  1.0), vec2f(0.0, 0.0)},
+		vtx{vec3f(-1.0, -1.0,  1.0), vec3f(0.0, 0.0,  1.0), vec2f(0.0, 1.0)},
+		vtx{vec3f(-1.0, -1.0,  1.0), vec3f(0.0, 0.0,  1.0), vec2f(0.0, 1.0)},
+		vtx{vec3f( 1.0, -1.0,  1.0), vec3f(0.0, 0.0,  1.0), vec2f(1.0, 1.0)},
+		vtx{vec3f( 1.0,  1.0,  1.0), vec3f(0.0, 0.0,  1.0), vec2f(1.0, 0.0)},
+
+		vtx{vec3f( 1.0, -1.0,  1.0), vec3f(0.0, -1.0, 0.0), vec2f(1.0, 0.0)},
+		vtx{vec3f(-1.0, -1.0,  1.0), vec3f(0.0, -1.0, 0.0), vec2f(0.0, 0.0)},
+		vtx{vec3f(-1.0, -1.0, -1.0), vec3f(0.0, -1.0, 0.0), vec2f(0.0, 1.0)},
+		vtx{vec3f(-1.0, -1.0, -1.0), vec3f(0.0, -1.0, 0.0), vec2f(0.0, 1.0)},
+		vtx{vec3f( 1.0, -1.0, -1.0), vec3f(0.0, -1.0, 0.0), vec2f(1.0, 1.0)},
+		vtx{vec3f( 1.0, -1.0,  1.0), vec3f(0.0, -1.0, 0.0), vec2f(1.0, 0.0)},
+
+		vtx{vec3f(-1.0,  1.0, -1.0), vec3f(0.0,  1.0, 0.0), vec2f(1.0, 1.0)},
+		vtx{vec3f(-1.0,  1.0,  1.0), vec3f(0.0,  1.0, 0.0), vec2f(1.0, 0.0)},
+		vtx{vec3f( 1.0,  1.0,  1.0), vec3f(0.0,  1.0, 0.0), vec2f(0.0, 0.0)},
+		vtx{vec3f( 1.0,  1.0,  1.0), vec3f(0.0,  1.0, 0.0), vec2f(0.0, 0.0)},
+		vtx{vec3f( 1.0,  1.0, -1.0), vec3f(0.0,  1.0, 0.0), vec2f(0.0, 1.0)},
+		vtx{vec3f(-1.0,  1.0, -1.0), vec3f(0.0,  1.0, 0.0), vec2f(1.0, 1.0)},
+
+
 	};
 
-	Mesh* cube = Mesh::loadEmpty(format, Mesh::Indexed);
-	cube->setPrimitiveType(Mesh::TRIANGLE_STRIP);
+	Mesh* cube = Mesh::loadEmpty(format);
+	cube->setPrimitiveType(Mesh::TRIANGLES);
 	cube->setVertexData(&cubeVertices[0], cubeVertices.size());
-	cube->setVertexIndices(&cubeIndices[0], cubeIndices.size());
 
 	return cube;
 }
@@ -72,6 +117,11 @@ int main() {
 	unique_ptr<ShaderProgram> quadShader(ShaderProgram::loadFromFile("assets/quad.vert", "assets/quad.frag"));
 	unique_ptr<Mesh> cube(createCube());
 	unique_ptr<ShaderProgram> cubeShader(ShaderProgram::loadFromFile("assets/cube.vert", "assets/cube.frag"));
+	unique_ptr<Texture2D> awesome(Texture2D::createFromFile("assets/awesomeface.png"));
+
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	while(true) {
 		window.update();
@@ -93,25 +143,30 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Draw fullscreen quad with fancy shader.
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		quadShader->uniform("t")->set(Clock::getSeconds());
 		quadShader->uniform("resolution")->set(vec2f(window.getSize()));
 		quad->draw(quadShader.get());
 
-		// Draw demoscene-ish crazy wireframe cube. :)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		// Draw crazy awesome cube. :)
 
 		// Projection matrix.
 		float aspect = float(window.getSize().x)/window.getSize().y;
-		mat4f mvp = glm::perspective(60.0f, aspect, 0.01f, 100.0f);
+		mat4f projection = glm::perspective(60.0f, aspect, 0.01f, 100.0f);
 
-		// Modelview matrix. (We multiply it directly into the MVP)
+		// View matrix.
+		mat4f view = glm::lookAt(vec3f(1.0, 1.0, 1.0)*4.0f, vec3f(0, 0, 0), vec3f(0, 1, 0));
+
+		// Model matrix.
 		float t = Clock::getSeconds();
-		float zoom = 4.0f;
-		mvp *= glm::lookAt(vec3f(sin(t), 1.0f, cos(t))*zoom, vec3f(0, 0, 0), vec3f(0, 1, 0));
+		mat4f model = glm::rotate(mat4f(1.0f), t*120.0f, vec3f(0.0, 1.0, 0.0));
+
+		// Normal matrix
+		mat3f normal = glm::inverse(glm::transpose(mat3f(model)));
 
 		// Draw it! :D
-		cubeShader->uniform("mvp")->set(mvp);
+		cubeShader->uniform("mvp")->set(projection*view*model);
+		cubeShader->uniform("norm")->set(normal);
+		cubeShader->uniform("tex")->set((int)awesome->getSlot());
 		cube->draw(cubeShader.get());
 
 		window.swapBuffers();
