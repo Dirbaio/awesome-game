@@ -12,7 +12,7 @@ float lolsin(float x) {
 }
 
 void main() {
-    vec2 p = (gl_FragCoord.xy / resolution) * 2.0 - 1.0;
+    vec2 p = ((gl_FragCoord.xy - resolution/2.0) / min(resolution.x, resolution.y)) * 2.0;
 
     float angle = atan(p.y, p.x);
     angle += t;

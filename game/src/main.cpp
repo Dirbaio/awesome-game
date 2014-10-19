@@ -154,7 +154,7 @@ int main() {
 		mat4f projection = glm::perspective(60.0f, aspect, 0.01f, 100.0f);
 
 		// View matrix.
-		mat4f view = glm::lookAt(vec3f(1.0, 1.0, 1.0)*4.0f, vec3f(0, 0, 0), vec3f(0, 1, 0));
+		mat4f view = glm::lookAt(vec3f(1.0, 1.0, 1.0)*3.0f, vec3f(0, 0, 0), vec3f(0, 1, 0));
 
 		// Model matrix.
 		float t = Clock::getSeconds();
