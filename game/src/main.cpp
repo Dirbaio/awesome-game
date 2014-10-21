@@ -8,7 +8,7 @@ using namespace std;
 MeshIndexed createQuad() {
 	// Create the quad mesh. Example of not indexed mesh.
 	Vertex::Format format({
-		Vertex::Element(Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 2))
+		Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 2)
 	});
 
 	vector<vec2f> data = {
@@ -34,9 +34,9 @@ Mesh createCube() {
 	// Create cube mesh. Example of indexed mesh.
 
 	Vertex::Format format({
-		Vertex::Element(Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 3)),
-		Vertex::Element(Vertex::Element(Vertex::Attribute::Normal, Vertex::Element::Float, 3)),
-		Vertex::Element(Vertex::Element(Vertex::Attribute::TexCoord, Vertex::Element::Float, 2))
+		Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 3),
+		Vertex::Element(Vertex::Attribute::Normal, Vertex::Element::Float, 3),
+		Vertex::Element(Vertex::Attribute::TexCoord, Vertex::Element::Float, 2)
 	});
 
 	struct vtx {
