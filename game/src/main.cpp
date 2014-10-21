@@ -5,7 +5,7 @@
 using namespace std;
 
 
-Mesh* createQuad() {
+MeshBase* createQuad() {
 	// Create the quad mesh. Example of not indexed mesh.
 	Vertex::Format format({
 		Vertex::Element(Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 2))
@@ -22,15 +22,15 @@ Mesh* createQuad() {
 		0, 1, 2, 3, 0, 2
 	};
 
-	Mesh* quad = Mesh::loadEmpty(format, Mesh::Indexed);
+	MeshIndexed* quad = new MeshIndexed(format);
 	quad->setVertexData(&data[0], data.size());
-	quad->setVertexIndices(&indices[0], indices.size());
+	quad->setIndexData(&indices[0], indices.size());
 	quad->setPrimitiveType(Mesh::TRIANGLES);
 
 	return quad;
 }
 
-Mesh* createCube() {
+MeshBase* createCube() {
 	// Create cube mesh. Example of indexed mesh.
 
 	Vertex::Format format({
@@ -87,11 +87,9 @@ Mesh* createCube() {
 		vtx{vec3f( 1.0,  1.0,  1.0), vec3f(0.0,  1.0, 0.0), vec2f(0.0, 0.0)},
 		vtx{vec3f( 1.0,  1.0, -1.0), vec3f(0.0,  1.0, 0.0), vec2f(0.0, 1.0)},
 		vtx{vec3f(-1.0,  1.0, -1.0), vec3f(0.0,  1.0, 0.0), vec2f(1.0, 1.0)},
-
-
 	};
 
-	Mesh* cube = Mesh::loadEmpty(format);
+	Mesh* cube = new Mesh(format);
 	cube->setPrimitiveType(Mesh::TRIANGLES);
 	cube->setVertexData(&cubeVertices[0], cubeVertices.size());
 
@@ -113,13 +111,14 @@ int main() {
 	// Create screen
 	Window window (Window::DisplayMode::createWindowedMode(800, 600));
 
-	unique_ptr<Mesh> quad(createQuad());
+	unique_ptr<MeshBase> quad(createQuad());
 	unique_ptr<ShaderProgram> quadShader(ShaderProgram::loadFromFile("assets/quad.vert", "assets/quad.frag"));
-	unique_ptr<Mesh> cube(createCube());
+	unique_ptr<MeshBase> cube(createCube());
 	unique_ptr<ShaderProgram> cubeShader(ShaderProgram::loadFromFile("assets/cube.vert", "assets/cube.frag"));
 	unique_ptr<Texture2D> awesome(Texture2D::createFromFile("assets/awesomeface.png"));
 
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -140,7 +139,7 @@ int main() {
 		glViewport(0, 0, window.getSize().x, window.getSize().y);
 		// Clear screen.
 		glClearColor(0.0, 0.0, 0.0, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Draw fullscreen quad with fancy shader.
 		quadShader->uniform("t")->set(Clock::getSeconds());
@@ -149,6 +148,7 @@ int main() {
 
 		// Draw crazy awesome cube. :)
 
+		glClear(GL_DEPTH_BUFFER_BIT);
 		// Projection matrix.
 		float aspect = float(window.getSize().x)/window.getSize().y;
 		mat4f projection = glm::perspective(60.0f, aspect, 0.01f, 100.0f);
