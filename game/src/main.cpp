@@ -115,7 +115,9 @@ int main() {
 	unique_ptr<ShaderProgram> quadShader(ShaderProgram::loadFromFile("assets/quad.vert", "assets/quad.frag"));
 	Mesh cube = createCube();
 	unique_ptr<ShaderProgram> cubeShader(ShaderProgram::loadFromFile("assets/cube.vert", "assets/cube.frag"));
-	unique_ptr<Texture2D> awesome(Texture2D::createFromFile("assets/awesomeface.png"));
+
+	Texture2D awesome;
+	awesome.loadFromFile("assets/awesomeface.png");
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -166,7 +168,7 @@ int main() {
 		// Draw it! :D
 		cubeShader->uniform("mvp")->set(projection*view*model);
 		cubeShader->uniform("norm")->set(normal);
-		cubeShader->uniform("tex")->set((int)awesome->getSlot());
+		cubeShader->uniform("tex")->set((int)awesome.getSlot());
 		cube.draw(cubeShader.get());
 
 		window.swapBuffers();
