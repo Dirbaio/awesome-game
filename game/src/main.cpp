@@ -5,7 +5,7 @@
 using namespace std;
 
 
-MeshBase* createQuad() {
+MeshIndexed createQuad() {
 	// Create the quad mesh. Example of not indexed mesh.
 	Vertex::Format format({
 		Vertex::Element(Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 2))
@@ -22,15 +22,15 @@ MeshBase* createQuad() {
 		0, 1, 2, 3, 0, 2
 	};
 
-	MeshIndexed* quad = new MeshIndexed(format);
-	quad->setVertexData(&data[0], data.size());
-	quad->setIndexData(&indices[0], indices.size());
-	quad->setPrimitiveType(Mesh::TRIANGLES);
+	MeshIndexed quad(format);
+	quad.setVertexData(&data[0], data.size());
+	quad.setIndexData(&indices[0], indices.size());
+	quad.setPrimitiveType(Mesh::TRIANGLES);
 
 	return quad;
 }
 
-MeshBase* createCube() {
+Mesh createCube() {
 	// Create cube mesh. Example of indexed mesh.
 
 	Vertex::Format format({
@@ -89,16 +89,16 @@ MeshBase* createCube() {
 		vtx{vec3f(-1.0,  1.0, -1.0), vec3f(0.0,  1.0, 0.0), vec2f(1.0, 1.0)},
 	};
 
-	Mesh* cube = new Mesh(format);
-	cube->setPrimitiveType(Mesh::TRIANGLES);
-	cube->setVertexData(&cubeVertices[0], cubeVertices.size());
+	Mesh cube(format);
+	cube.setPrimitiveType(Mesh::TRIANGLES);
+	cube.setVertexData(&cubeVertices[0], cubeVertices.size());
 
 	return cube;
 }
 
 void printFullscreenModes() {
 	const auto& modes = Window::getFullscreenModes();
-	for(int i = 0; i < modes.size(); i++) {
+	for(unsigned int i = 0; i < modes.size(); i++) {
 		cout<<i<<": "<<modes[i].getWidth()<<" "<<modes[i].getHeight()<<endl;
 	}
 }
@@ -111,9 +111,9 @@ int main() {
 	// Create screen
 	Window window (Window::DisplayMode::createWindowedMode(800, 600));
 
-	unique_ptr<MeshBase> quad(createQuad());
+	MeshIndexed quad = createQuad();
 	unique_ptr<ShaderProgram> quadShader(ShaderProgram::loadFromFile("assets/quad.vert", "assets/quad.frag"));
-	unique_ptr<MeshBase> cube(createCube());
+	Mesh cube = createCube();
 	unique_ptr<ShaderProgram> cubeShader(ShaderProgram::loadFromFile("assets/cube.vert", "assets/cube.frag"));
 	unique_ptr<Texture2D> awesome(Texture2D::createFromFile("assets/awesomeface.png"));
 
@@ -144,7 +144,7 @@ int main() {
 		// Draw fullscreen quad with fancy shader.
 		quadShader->uniform("t")->set(Clock::getSeconds());
 		quadShader->uniform("resolution")->set(vec2f(window.getSize()));
-		quad->draw(quadShader.get());
+		quad.draw(quadShader.get());
 
 		// Draw crazy awesome cube. :)
 
@@ -167,7 +167,7 @@ int main() {
 		cubeShader->uniform("mvp")->set(projection*view*model);
 		cubeShader->uniform("norm")->set(normal);
 		cubeShader->uniform("tex")->set((int)awesome->getSlot());
-		cube->draw(cubeShader.get());
+		cube.draw(cubeShader.get());
 
 		window.swapBuffers();
 	}
