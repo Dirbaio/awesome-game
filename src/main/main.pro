@@ -1,6 +1,6 @@
 QT -= gui
 
-TARGET = game
+TARGET = main
 CONFIG -= app_bundle
 
 TEMPLATE = app

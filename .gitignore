@@ -1,4 +1,15 @@
+# QtCreator user option files
 *.user
+
+# QtCreator build dirs
+/build-*
+
 *.o
 *.a
 *~
+android/local.properties
+android/gen/
+android/libs/
+android/bin/
+android/obj/
+

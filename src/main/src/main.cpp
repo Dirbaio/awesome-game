@@ -6,7 +6,8 @@ using namespace std;
 
 
 MeshIndexed createQuad() {
-	// Create the quad mesh. Example of not indexed mesh.
+	// Create the quad mesh. Example of indexed mesh.
+
 	Vertex::Format format({
 		Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 2)
 	});
@@ -31,7 +32,7 @@ MeshIndexed createQuad() {
 }
 
 Mesh createCube() {
-	// Create cube mesh. Example of indexed mesh.
+	// Create cube mesh. Example of non-indexed mesh, with multiple attributes.
 
 	Vertex::Format format({
 		Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 3),
@@ -130,6 +131,13 @@ int main() {
 		if(Keyboard::pressed(Keyboard::Escape))
 			break;
 
+		if(Keyboard::pressed(Keyboard::A))
+			cout<<"Pressed A!"<<endl;
+		if(Keyboard::justPressed(Keyboard::A))
+			cout<<"Just Pressed A!"<<endl;
+		if(Keyboard::justReleased(Keyboard::A))
+			cout<<"Just Released A!"<<endl;
+
 		if(Keyboard::pressed(Keyboard::Q))
 			window.setDisplayMode(Window::getFullscreenModes()[0]);
 		if(Keyboard::pressed(Keyboard::W))
@@ -139,18 +147,12 @@ int main() {
 
 		// Set viewport
 		glViewport(0, 0, window.getSize().x, window.getSize().y);
-		// Clear screen.
-		glClearColor(0.0, 0.0, 0.0, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Draw fullscreen quad with fancy shader.
 		quadShader->uniform("t")->set(Clock::getSeconds());
 		quadShader->uniform("resolution")->set(vec2f(window.getSize()));
 		quad.draw(quadShader.get());
 
-		// Draw crazy awesome cube. :)
-
-		glClear(GL_DEPTH_BUFFER_BIT);
 		// Projection matrix.
 		float aspect = float(window.getSize().x)/window.getSize().y;
 		mat4f projection = glm::perspective(60.0f, aspect, 0.01f, 100.0f);
@@ -165,10 +167,11 @@ int main() {
 		// Normal matrix
 		mat3f normal = glm::inverse(glm::transpose(mat3f(model)));
 
-		// Draw it! :D
+		// Draw crazy awesome cube. :)
+		glClear(GL_DEPTH_BUFFER_BIT);
 		cubeShader->uniform("mvp")->set(projection*view*model);
 		cubeShader->uniform("norm")->set(normal);
-		cubeShader->uniform("tex")->set((int)awesome.getSlot());
+		cubeShader->uniform("tex")->set(awesome);
 		cube.draw(cubeShader.get());
 
 		window.swapBuffers();
