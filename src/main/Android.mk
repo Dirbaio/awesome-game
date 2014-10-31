@@ -15,9 +15,9 @@ LOCAL_SRC_FILES := \
 	$(wildcard $(LOCAL_PATH)/src/*.cpp) \
 	)
 
-LOCAL_STATIC_LIBRARIES := VBE_static
+LOCAL_WHOLE_STATIC_LIBRARIES := VBE_static
 
 LOCAL_CFLAGS += -std=c++11
-LOCAL_LDLIBS := -lGLESv1_CM -lGLESv2 -llog
+LOCAL_LDLIBS := -lGLESv1_CM -lGLESv2 -llog -lEGL
 
 include $(BUILD_SHARED_LIBRARY)
