@@ -155,7 +155,6 @@ int main() {
 		// Draw fullscreen quad with fancy shader.
 		float t = Clock::getSeconds();
 		t -= 12*floor(t/12.0f);
-		VBE_LOG(t);
 		quadShader->uniform("t")->set(t);
 		quadShader->uniform("resolution")->set(vec2f(window.getSize()));
 		quad.draw(quadShader.get());

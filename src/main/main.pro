@@ -16,4 +16,5 @@ OTHER_FILES += \
     ../../assets/quad.frag \
     ../../assets/cube.vert \
     ../../assets/cube.frag \
-    ../../assets/awesomeface.png
+    ../../assets/awesomeface.png \
+    ../../android/AndroidManifest.xml
