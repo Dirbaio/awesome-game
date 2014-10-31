@@ -153,7 +153,10 @@ int main() {
 		glViewport(0, 0, window.getSize().x, window.getSize().y);
 
 		// Draw fullscreen quad with fancy shader.
-		quadShader->uniform("t")->set(Clock::getSeconds());
+		float t = Clock::getSeconds();
+		t -= 12*floor(t/12.0f);
+		VBE_LOG(t);
+		quadShader->uniform("t")->set(t);
 		quadShader->uniform("resolution")->set(vec2f(window.getSize()));
 		quad.draw(quadShader.get());
 
@@ -165,7 +168,7 @@ int main() {
 		mat4f view = glm::lookAt(vec3f(1.0, 1.0, 1.0)*3.0f, vec3f(0, 0, 0), vec3f(0, 1, 0));
 
 		// Model matrix.
-		float t = Clock::getSeconds();
+		t = Clock::getSeconds();
 		mat4f model = glm::rotate(mat4f(1.0f), t*120.0f, vec3f(0.0, 1.0, 0.0));
 
 		// Normal matrix
