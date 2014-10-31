@@ -113,12 +113,16 @@ int main() {
 	Window window (Window::DisplayMode::createWindowedMode(800, 600));
 
 	MeshIndexed quad = createQuad();
-	unique_ptr<ShaderProgram> quadShader(ShaderProgram::loadFromFile("assets/quad.vert", "assets/quad.frag"));
+	unique_ptr<ShaderProgram> quadShader(ShaderProgram::load(
+											 Storage::openAsset("quad.vert"),
+											 Storage::openAsset("quad.frag")));
 	Mesh cube = createCube();
-	unique_ptr<ShaderProgram> cubeShader(ShaderProgram::loadFromFile("assets/cube.vert", "assets/cube.frag"));
+	unique_ptr<ShaderProgram> cubeShader(ShaderProgram::load(
+											 Storage::openAsset("cube.vert"),
+											 Storage::openAsset("cube.frag")));
 
 	Texture2D awesome;
-	awesome.loadFromFile("assets/awesomeface.png");
+	awesome.load(Storage::openAsset("awesomeface.png"));
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
