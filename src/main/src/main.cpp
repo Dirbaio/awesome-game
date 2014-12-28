@@ -1,4 +1,5 @@
 #include <VBE/VBE.hpp>
+#include <VBE/graphics/Image.hpp>
 #include <iostream>
 #include <memory>
 
@@ -9,8 +10,8 @@ MeshIndexed createQuad() {
 	// Create the quad mesh. Example of indexed mesh.
 
 	Vertex::Format format({
-		Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 2)
-	});
+							  Vertex::Attribute("a_position", Vertex::Attribute::Float, 2)
+						  });
 
 	vector<vec2f> data = {
 		vec2f(1, -1),
@@ -35,15 +36,15 @@ Mesh createCube() {
 	// Create cube mesh. Example of non-indexed mesh, with multiple attributes.
 
 	Vertex::Format format({
-		Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 3),
-		Vertex::Element(Vertex::Attribute::Normal, Vertex::Element::Float, 3),
-		Vertex::Element(Vertex::Attribute::TexCoord, Vertex::Element::Float, 2)
-	});
+							  Vertex::Attribute("a_position", Vertex::Attribute::Float, 3),
+							  Vertex::Attribute("a_normal", Vertex::Attribute::Float, 3),
+							  Vertex::Attribute("a_texcoord", Vertex::Attribute::Float, 2)
+						  });
 
 	struct vtx {
-		vec3f position;
-		vec3f normal;
-		vec2f texcoord;
+			vec3f position;
+			vec3f normal;
+			vec2f texcoord;
 	};
 
 	vector<vtx> cubeVertices = {
@@ -113,16 +114,16 @@ int main() {
 	Window window (Window::DisplayMode::createWindowedMode(800, 600));
 
 	MeshIndexed quad = createQuad();
-	unique_ptr<ShaderProgram> quadShader(ShaderProgram::load(
-											 Storage::openAsset("quad.vert"),
-											 Storage::openAsset("quad.frag")));
+	ShaderProgram quadShader(
+				Storage::openAsset("quad.vert"),
+				Storage::openAsset("quad.frag"));
 	Mesh cube = createCube();
-	unique_ptr<ShaderProgram> cubeShader(ShaderProgram::load(
-											 Storage::openAsset("cube.vert"),
-											 Storage::openAsset("cube.frag")));
+	ShaderProgram cubeShader(
+				Storage::openAsset("cube.vert"),
+				Storage::openAsset("cube.frag"));
 
-	Texture2D awesome;
-	awesome.load(Storage::openAsset("awesomeface.png"));
+	Texture2D awesome = Texture2D::load(Storage::openAsset("awesomeface.png"));
+
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -155,9 +156,9 @@ int main() {
 		// Draw fullscreen quad with fancy shader.
 		float t = Clock::getSeconds();
 		t -= 12*floor(t/12.0f);
-		quadShader->uniform("t")->set(t);
-		quadShader->uniform("resolution")->set(vec2f(window.getSize()));
-		quad.draw(quadShader.get());
+		quadShader.uniform("t")->set(t);
+		quadShader.uniform("resolution")->set(vec2f(window.getSize()));
+		quad.draw(&quadShader);
 
 		// Projection matrix.
 		float aspect = float(window.getSize().x)/window.getSize().y;
@@ -175,10 +176,10 @@ int main() {
 
 		// Draw crazy awesome cube. :)
 		glClear(GL_DEPTH_BUFFER_BIT);
-		cubeShader->uniform("mvp")->set(projection*view*model);
-		cubeShader->uniform("norm")->set(normal);
-		cubeShader->uniform("tex")->set(awesome);
-		cube.draw(cubeShader.get());
+		cubeShader.uniform("mvp")->set(projection*view*model);
+		cubeShader.uniform("norm")->set(normal);
+		cubeShader.uniform("tex")->set(awesome);
+		cube.draw(&cubeShader);
 
 		window.swapBuffers();
 	}
