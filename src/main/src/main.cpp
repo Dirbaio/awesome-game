@@ -158,7 +158,7 @@ int main() {
 		t -= 12*floor(t/12.0f);
 		quadShader.uniform("t")->set(t);
 		quadShader.uniform("resolution")->set(vec2f(window.getSize()));
-		quad.draw(&quadShader);
+		quad.draw(quadShader);
 
 		// Projection matrix.
 		float aspect = float(window.getSize().x)/window.getSize().y;
@@ -179,7 +179,7 @@ int main() {
 		cubeShader.uniform("mvp")->set(projection*view*model);
 		cubeShader.uniform("norm")->set(normal);
 		cubeShader.uniform("tex")->set(awesome);
-		cube.draw(&cubeShader);
+		cube.draw(cubeShader);
 
 		window.swapBuffers();
 	}
