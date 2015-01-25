@@ -2,6 +2,8 @@
 #include <VBE/graphics/Image.hpp>
 #include <iostream>
 #include <memory>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -98,8 +100,42 @@ Mesh createCube() {
 	return cube;
 }
 
+bool isDir(const char* path) {
+	struct stat info;
+
+	if(stat(path, &info) != 0 )
+		return false;
+
+	return (info.st_mode & S_IFDIR) != 0;
+}
+
+void findAssetPath() {
+	if(isDir("assets/")) {
+		Storage::setAssetPath("assets/");
+		return;
+	}
+	if(isDir("../assets/")) {
+		Storage::setAssetPath("../assets/");
+		return;
+	}
+	if(isDir("../../assets/")) {
+		Storage::setAssetPath("../../assets/");
+		return;
+	}
+	if(isDir("../../../assets/")) {
+		Storage::setAssetPath("../../../assets/");
+		return;
+	}
+	if(isDir("../../../../assets/")) {
+		Storage::setAssetPath("../../../../assets/");
+		return;
+	}
+
+	VBE_ASSERT(false, "Can't find assets folder!");
+}
+
 int main() {
-	Storage::setAssetPath("../../assets/");
+	findAssetPath();
 
 	// Create screen
 	ContextSettings settings;
