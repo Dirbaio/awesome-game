@@ -98,32 +98,26 @@ Mesh createCube() {
 	return cube;
 }
 
-void printFullscreenModes() {
-	const auto& modes = Window::getFullscreenModes();
-	for(unsigned int i = 0; i < modes.size(); i++) {
-		cout<<i<<": "<<modes[i].getWidth()<<" "<<modes[i].getHeight()<<endl;
-	}
-}
-
 int main() {
-	cout<<"Hello VBE!"<<endl;
-
-	printFullscreenModes();
+	Storage::setAssetPath("../../assets/");
 
 	// Create screen
-	Window window (Window::DisplayMode::createWindowedMode(800, 600));
+	ContextSettings settings;
+	settings.versionMajor = 3;
+	settings.versionMinor = 3;
+	Window window (Window::DisplayMode::createWindowedMode(800, 600), settings);
 
 	MeshIndexed quad = createQuad();
 	ShaderProgram quadShader(
 				Storage::openAsset("quad.vert"),
 				Storage::openAsset("quad.frag"));
+
 	Mesh cube = createCube();
 	ShaderProgram cubeShader(
 				Storage::openAsset("cube.vert"),
 				Storage::openAsset("cube.frag"));
 
 	Texture2D awesome = Texture2D::load(Storage::openAsset("awesomeface.png"));
-
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -133,7 +127,7 @@ int main() {
 	while(true) {
 		window.update();
 
-		if(Keyboard::pressed(Keyboard::Escape))
+		if(Keyboard::pressed(Keyboard::Escape) || window.isClosing())
 			break;
 
 		if(Keyboard::pressed(Keyboard::A))
