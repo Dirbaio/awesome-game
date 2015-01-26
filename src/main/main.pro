@@ -24,4 +24,5 @@ RC_FILE = $$PWD/resources.rc
 
 DISTFILES += \
     resources.rc \
-    manifest.xml
+    manifest.xml \
+    ../../assets/quad2.frag

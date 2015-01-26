@@ -134,6 +134,8 @@ void findAssetPath() {
 	VBE_ASSERT(false, "Can't find assets folder!");
 }
 
+
+
 int main() {
 	findAssetPath();
 
@@ -146,7 +148,7 @@ int main() {
 	MeshIndexed quad = createQuad();
 	ShaderProgram quadShader(
 				Storage::openAsset("quad.vert"),
-				Storage::openAsset("quad.frag"));
+				Storage::openAsset("quad2.frag"));
 
 	Mesh cube = createCube();
 	ShaderProgram cubeShader(
@@ -183,12 +185,8 @@ int main() {
 		// Set viewport
 		glViewport(0, 0, window.getSize().x, window.getSize().y);
 
-		// Draw fullscreen quad with fancy shader.
-		float t = Clock::getSeconds();
-		t -= 12*floor(t/12.0f);
-		quadShader.uniform("t")->set(t);
-		quadShader.uniform("resolution")->set(vec2f(window.getSize()));
-		quad.draw(quadShader);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Projection matrix.
 		float aspect = float(window.getSize().x)/window.getSize().y;
@@ -198,7 +196,7 @@ int main() {
 		mat4f view = glm::lookAt(vec3f(1.0, 1.0, 1.0)*3.0f, vec3f(0, 0, 0), vec3f(0, 1, 0));
 
 		// Model matrix.
-		t = Clock::getSeconds();
+		float t = Clock::getSeconds();
 		mat4f model = glm::rotate(mat4f(1.0f), t*120.0f, vec3f(0.0, 1.0, 0.0));
 
 		// Normal matrix
@@ -210,6 +208,17 @@ int main() {
 		cubeShader.uniform("norm")->set(normal);
 		cubeShader.uniform("tex")->set(awesome);
 		cube.draw(cubeShader);
+
+		for(const Touch::Finger& f : Touch::getFingers()) {
+			// Draw fullscreen quad with fancy shader.
+			vec2f p = f.position();
+			p.x = p.x*2.0f - 1.0f;
+			p.y = 1.0f - p.y*2.0f;
+			quadShader.uniform("u_position")->set(p);
+			quadShader.uniform("u_size")->set(vec2f(0.15f, 0.15f));
+			quad.draw(quadShader);
+		}
+
 
 		window.swapBuffers();
 	}
