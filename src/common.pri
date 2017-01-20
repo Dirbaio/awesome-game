@@ -9,5 +9,5 @@ win32 {
     QMAKE_CFLAGS += -DWINDOWS -DGLEW_STATIC
 }
 else {
-    LIBS += -lSDL2 -lGL -lGLEW
+    LIBS += -lSDL2 -lGL -lGLEW -lBox2D
 }

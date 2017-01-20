@@ -155,7 +155,7 @@ public:
         }
 
         vector<vec2f> data;
-        for(int i = 0 ; i < CHUNK_SIZE+1; i++) {
+        for(int i = 0 ; i < CHUNK_SIZE; i++) {
             data.push_back(vec2f((i+0)*CHUNK_RESOLUTION, heights[i]-CHUNK_DEEP));
             data.push_back(vec2f((i+1)*CHUNK_RESOLUTION, heights[i+1]-CHUNK_DEEP));
             data.push_back(vec2f((i+1)*CHUNK_RESOLUTION, heights[i+1]));
@@ -176,6 +176,7 @@ public:
 
 const int GROUND_LEN = 8;
 class Ground {
+public:
     vector<GroundChunk*> chunks;
 
     Ground() {
@@ -184,12 +185,22 @@ class Ground {
     }
 
     void load(int x) {
+        x = int(x / CHUNK_RESOLUTION / CHUNK_SIZE) - GROUND_LEN/2;
         for(int i = 0; i < GROUND_LEN; i++) {
             int pos = i + x;
-            int idx = pos % GROUND_LEN;
-            if(chunks[idx]->pos != pos)
-                delete chunks[idx];
-            chunks[idx] = new GroundChunk(pos);
+            int idx = ((pos % GROUND_LEN) + GROUND_LEN) % GROUND_LEN;
+            if(!chunks[idx] || chunks[idx]->pos != pos) {
+                if(!chunks[idx])
+                    delete chunks[idx];
+                chunks[idx] = new GroundChunk(pos);
+            }
+        }
+    }
+
+    void draw(ShaderProgram& s, mat4f projection, vec2f cam) {
+        for(int i = 0; i < GROUND_LEN; i++) {
+            s.uniform("mvp")->set(glm::translate(projection, vec3f(chunks[i]->pos*CHUNK_SIZE*CHUNK_RESOLUTION-cam.x, -cam.y, 0.0f)));
+            chunks[i]->mesh.draw(s);
         }
     }
 };
@@ -220,7 +231,7 @@ int main() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    GroundChunk chunk(2);
+    Ground g;
 
 	while(true) {
 		window.update();
@@ -257,7 +268,7 @@ int main() {
 //		mat4f view = glm::lookAt(vec3f(1.0, 1.0, 1.0)*3.0f, vec3f(0, 0, 0), vec3f(0, 1, 0));
 
 		// Model matrix.
-		float t = Clock::getSeconds();
+        float t = Clock::getSeconds()*50;
         mat4f model = glm::rotate(mat4f(1.0f), t*2.0f, vec3f(0.0, 1.0, 0.0));
         model = glm::scale(model, vec3f(0.5f));
 
@@ -271,8 +282,8 @@ int main() {
         cube.draw(cubeShader);
 
         // Draw crazy awesome cube. :)
-        quadShader.uniform("mvp")->set(projection);
-        chunk.mesh.draw(quadShader);
+        g.load(t);
+        g.draw(quadShader, projection, vec2f(t, 0));
 
 
 		window.swapBuffers();
