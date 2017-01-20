@@ -9,7 +9,6 @@
 
 using namespace std;
 
-
 MeshIndexed createQuad() {
 	// Create the quad mesh. Example of indexed mesh.
 
@@ -34,6 +33,21 @@ MeshIndexed createQuad() {
 	quad.setPrimitiveType(Mesh::TRIANGLES);
 
 	return quad;
+}
+
+
+mat4f projection;
+MeshIndexed quadMesh;
+ShaderProgram quadShader;
+
+void drawQuad(Texture2D& tex, vec2f pos, float radius, float roto) {
+    quadShader.uniform("u_tex")->set(tex);
+    mat4f lol = projection;
+    lol = glm::translate(lol, vec3f(pos.x, pos.y, 0));
+    lol = glm::scale(lol, vec3f(radius, radius, radius));
+    lol = glm::rotate(lol, roto, vec3f(0, 0, 1));
+    quadShader.uniform("mvp")->set(lol);
+    quadMesh.draw(quadShader);
 }
 
 Mesh createCube() {
@@ -136,7 +150,6 @@ void findAssetPath() {
 	VBE_ASSERT(false, "Can't find assets folder!");
 }
 
-
 b2World world(b2Vec2(0.0f, -10.0f));
 
 const int CHUNK_SIZE = 256;
@@ -156,13 +169,14 @@ public:
     vector<float> heights;
     Mesh mesh;
     int pos;
+    b2Body* body;
 
     GroundChunk(int pos) {
         this->pos = pos;
 
         heights.resize(CHUNK_SIZE+1);
         for(int i = 0 ; i < CHUNK_SIZE+1; i++) {
-            float x = i + pos * CHUNK_SIZE;
+            int x = i + pos * CHUNK_SIZE;
             heights[i] = calcHeight(x);
         }
 
@@ -188,16 +202,29 @@ public:
         for(int i = 0 ; i < CHUNK_SIZE+1; i++) {
             v.push_back(b2Vec2((pos*CHUNK_SIZE+i)*CHUNK_RESOLUTION, heights[i]));
         }
-
         b2ChainShape chain;
         chain.CreateChain(&v[0], v.size());
+        chain.SetPrevVertex(b2Vec2((pos*CHUNK_SIZE-1)*CHUNK_RESOLUTION, calcHeight(pos*CHUNK_SIZE-1)));
+        chain.SetPrevVertex(b2Vec2(((pos+1)*CHUNK_SIZE+1)*CHUNK_RESOLUTION, calcHeight((pos+1)*CHUNK_SIZE+1)));
 
-        chain.SetPrevVertex(b2Vec2(3.0f, 1.0f));
-        chain.SetNextVertex(b2Vec2(-2.0f, 0.0f));
+        b2BodyDef def;
+        def.type = b2_staticBody;
+        def.position.Set(0.0f, 0.0f);
+        body = world.CreateBody(&def);
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &chain;
+        fixtureDef.friction = 0.5;
+        body->CreateFixture(&fixtureDef);
+    }
+
+    ~GroundChunk() {
+        world.DestroyBody(body);
     }
 };
 
 const int GROUND_LEN = 8;
+ShaderProgram groundShader;
+
 class Ground {
 public:
     vector<GroundChunk*> chunks;
@@ -220,11 +247,40 @@ public:
         }
     }
 
-    void draw(ShaderProgram& s, mat4f projection, vec2f cam) {
+
+    void draw() {
         for(int i = 0; i < GROUND_LEN; i++) {
-            s.uniform("mvp")->set(glm::translate(projection, vec3f(chunks[i]->pos*CHUNK_SIZE*CHUNK_RESOLUTION-cam.x, -cam.y, 0.0f)));
-            chunks[i]->mesh.draw(s);
+            groundShader.uniform("mvp")->set(glm::translate(projection, vec3f(chunks[i]->pos*CHUNK_SIZE*CHUNK_RESOLUTION, 0.0f, 0.0f)));
+            chunks[i]->mesh.draw(groundShader);
         }
+    }
+};
+
+Texture2D* awesome;
+
+class Player {
+public:
+    b2Body* body;
+
+    Player() {
+
+        b2CircleShape circle;
+        circle.m_radius = 1.0f;
+
+        b2BodyDef def;
+        def.type = b2_dynamicBody;
+        def.position.Set(0.0f, 10.0f);
+        body = world.CreateBody(&def);
+        b2FixtureDef fixtureDef;
+        fixtureDef.friction = 0.5;
+        fixtureDef.shape = &circle;
+        fixtureDef.density = 0.01;
+        body->CreateFixture(&fixtureDef);
+    }
+
+    void draw() {
+        vec2f pos(body->GetPosition().x, body->GetPosition().y);
+        drawQuad(*awesome, pos, 1.0f, body->GetAngle());
     }
 };
 
@@ -239,17 +295,11 @@ int main() {
 	settings.versionMinor = 3;
 	Window window (Window::DisplayMode::createWindowedMode(800, 600), settings);
 
-	MeshIndexed quad = createQuad();
-	ShaderProgram quadShader(
-				Storage::openAsset("quad.vert"),
-				Storage::openAsset("quad2.frag"));
+    groundShader = ShaderProgram(Storage::openAsset("ground.vert"), Storage::openAsset("ground.frag"));
+    quadShader = ShaderProgram(Storage::openAsset("quad.vert"), Storage::openAsset("quad.frag"));
+    quadMesh = createQuad();
 
-	Mesh cube = createCube();
-	ShaderProgram cubeShader(
-				Storage::openAsset("cube.vert"),
-				Storage::openAsset("cube.frag"));
-
-	Texture2D awesome = Texture2D::load(Storage::openAsset("awesomeface.png"));
+    awesome = new Texture2D(Texture2D::load(Storage::openAsset("awesomeface.png")));
 
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
@@ -257,7 +307,7 @@ int main() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Ground g;
-
+    Player p;
 	while(true) {
 		window.update();
 
@@ -278,6 +328,11 @@ int main() {
 		if(Keyboard::pressed(Keyboard::E))
 			window.setDisplayMode(Window::getFullscreenModes()[12]);
 
+        float32 timeStep = 1.0f / 60.f;
+        int32 velocityIterations = 10;
+        int32 positionIterations = 8;
+        world.Step(timeStep, velocityIterations, positionIterations);
+
 		// Set viewport
 		glViewport(0, 0, window.getSize().x, window.getSize().y);
 
@@ -286,30 +341,14 @@ int main() {
 
 		// Projection matrix.
 		float aspect = float(window.getSize().x)/window.getSize().y;
-        float zoom = 8.0f;
-        mat4f projection = glm::ortho(-zoom*aspect, zoom*aspect, -zoom, zoom);
+        float zoom = 15.0f;
+        projection = glm::ortho(-zoom*aspect, zoom*aspect, -zoom, zoom);
 
-		// View matrix.
-//		mat4f view = glm::lookAt(vec3f(1.0, 1.0, 1.0)*3.0f, vec3f(0, 0, 0), vec3f(0, 1, 0));
-
-		// Model matrix.
         float t = Clock::getSeconds()*50;
-        mat4f model = glm::rotate(mat4f(1.0f), t*2.0f, vec3f(0.0, 1.0, 0.0));
-        model = glm::scale(model, vec3f(0.5f));
 
-		// Normal matrix
-		mat3f normal = glm::inverse(glm::transpose(mat3f(model)));
-
-        // Draw crazy awesome cube. :)
-        cubeShader.uniform("mvp")->set(projection*model);
-        cubeShader.uniform("norm")->set(normal);
-        cubeShader.uniform("tex")->set(awesome);
-        cube.draw(cubeShader);
-
-        // Draw crazy awesome cube. :)
-        g.load(t);
-        g.draw(quadShader, projection, vec2f(t, 0));
-
+        //g.load(t);
+        g.draw();
+        p.draw();
 
 		window.swapBuffers();
 	}

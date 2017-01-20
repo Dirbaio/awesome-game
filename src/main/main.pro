@@ -16,10 +16,6 @@ SOURCES += \
     src/websocketinput.cpp
 
 OTHER_FILES += \
-    ../../assets/quad.vert \
-    ../../assets/quad.frag \
-    ../../assets/cube.vert \
-    ../../assets/cube.frag \
     ../../assets/awesomeface.png \
     ../../android/AndroidManifest.xml
 
@@ -29,4 +25,8 @@ DISTFILES += \
     resources.rc \
     manifest.xml \
     ../../assets/quad2.frag \
-    ../../client.html
+    ../../client.html \
+    ../../assets/ground.frag \
+    ../../assets/ground.vert \
+    ../../assets/quad.frag \
+    ../../assets/quad.vert
