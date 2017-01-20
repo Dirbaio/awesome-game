@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <Box2D/Box2D.h>
+#include "websocketinput.h"
 
 using namespace std;
 
@@ -229,6 +230,8 @@ public:
 
 int main() {
 	findAssetPath();
+
+	WebSocketInput input;
 
 	// Create screen
 	ContextSettings settings;

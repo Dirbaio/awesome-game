@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Awesome Gaem Input</title>
+
+<style type="text/css">
+div.container {
+    text-align:center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%)
+}
+.button_blue {
+    background-color: #45b1fe;
+    border-radius: 2px;
+    color: white;
+    font-family: $sf;
+    font-size: 15px;
+    letter-spacing: 1px;
+    padding: 23px 45px;
+    text-transform: uppercase;
+    margin: 10px;
+    cursor: pointer;
+}
+</style>
+
+</head>
+
+<body style="font-family:sans-serif;">
+
+<div id="container" class="container">
+    <div id="player_num"></div>
+    <div id="button" class="button" style="display:none">
+        <div class="button_blue" onmousedown="up(true)" onmouseup="up(false)">Up</div>
+        <div class="button_blue" onmousedown="down(true)" onmouseup="down(false)">Down</div>
+    </div>
+</div>
+
+<script>
+var ws;
+window.onload=function(){
+  ws=new WebSocket("ws://localhost:8080/");
+  ws.onmessage=function(evt){
+    console.log(evt.data);
+    document.getElementById("player_num").innerHTML = "Player "+evt.data;
+    document.getElementById("button").style.display="";
+  };
+  ws.onopen=function(evt){
+    ws.send("hello");
+  }
+}
+function up(b) {
+    if (b) ws.send("up");
+    else ws.send("nup");
+}
+
+function down(b) {
+    if (b) ws.send("down");
+    else ws.send("ndown");
+}
+
+window.onclose=function(){
+  ws.close();
+}
+</script>
+</body>
+</html>
