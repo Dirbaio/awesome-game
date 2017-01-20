@@ -190,14 +190,14 @@ int main() {
 
 		// Projection matrix.
 		float aspect = float(window.getSize().x)/window.getSize().y;
-		mat4f projection = glm::perspective(60.0f, aspect, 0.01f, 100.0f);
+        mat4f projection = glm::perspective(1.04719f, aspect, 0.01f, 100.0f);
 
 		// View matrix.
 		mat4f view = glm::lookAt(vec3f(1.0, 1.0, 1.0)*3.0f, vec3f(0, 0, 0), vec3f(0, 1, 0));
 
 		// Model matrix.
 		float t = Clock::getSeconds();
-		mat4f model = glm::rotate(mat4f(1.0f), t*120.0f, vec3f(0.0, 1.0, 0.0));
+        mat4f model = glm::rotate(mat4f(1.0f), t*2.0f, vec3f(0.0, 1.0, 0.0));
 
 		// Normal matrix
 		mat3f normal = glm::inverse(glm::transpose(mat3f(model)));
