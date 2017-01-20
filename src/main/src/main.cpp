@@ -247,7 +247,6 @@ public:
         }
     }
 
-
     void draw() {
         for(int i = 0; i < GROUND_LEN; i++) {
             groundShader.uniform("mvp")->set(glm::translate(projection, vec3f(chunks[i]->pos*CHUNK_SIZE*CHUNK_RESOLUTION, 0.0f, 0.0f)));
@@ -278,9 +277,12 @@ public:
         body->CreateFixture(&fixtureDef);
     }
 
+    vec2f getPosition() {
+        return vec2f(body->GetPosition().x, body->GetPosition().y);
+    }
+
     void draw() {
-        vec2f pos(body->GetPosition().x, body->GetPosition().y);
-        drawQuad(*awesome, pos, 1.0f, body->GetAngle());
+        drawQuad(*awesome, getPosition(), 1.0f, body->GetAngle());
     }
 };
 
@@ -328,6 +330,10 @@ int main() {
 		if(Keyboard::pressed(Keyboard::E))
 			window.setDisplayMode(Window::getFullscreenModes()[12]);
 
+        if(Keyboard::pressed(Keyboard::Right))
+            p.body->ApplyLinearImpulse(b2Vec2(0.2, 0), b2Vec2(0, 0), true);
+        if(Keyboard::pressed(Keyboard::Left))
+            p.body->ApplyLinearImpulse(b2Vec2(-0.2, 0), b2Vec2(0, 0), true);
         float32 timeStep = 1.0f / 60.f;
         int32 velocityIterations = 10;
         int32 positionIterations = 8;
@@ -343,10 +349,11 @@ int main() {
 		float aspect = float(window.getSize().x)/window.getSize().y;
         float zoom = 15.0f;
         projection = glm::ortho(-zoom*aspect, zoom*aspect, -zoom, zoom);
+        projection = glm::translate(projection, vec3f(-p.getPosition().x, -p.getPosition().y, 0));
 
         float t = Clock::getSeconds()*50;
 
-        //g.load(t);
+        g.load(p.getPosition().x);
         g.draw();
         p.draw();
 
