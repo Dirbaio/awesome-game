@@ -4,6 +4,7 @@
 #include <memory>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <Box2D/Box2D.h>
 
 using namespace std;
 
@@ -134,9 +135,21 @@ void findAssetPath() {
 	VBE_ASSERT(false, "Can't find assets folder!");
 }
 
+
+b2World world(b2Vec2(0.0f, -10.0f));
+
 const int CHUNK_SIZE = 256;
 const float CHUNK_RESOLUTION = 0.1f;
 const float CHUNK_DEEP = 100;
+
+float calcHeight(int x) {
+    float res = 0;
+    res += sin(x*0.04);
+    res += sin(x*0.03732);
+    res += sin(x*0.083)*0.4;
+    return res;
+}
+
 class GroundChunk {
 public:
     vector<float> heights;
@@ -149,9 +162,7 @@ public:
         heights.resize(CHUNK_SIZE+1);
         for(int i = 0 ; i < CHUNK_SIZE+1; i++) {
             float x = i + pos * CHUNK_SIZE;
-            heights[i] += sin(x*0.04);
-            heights[i] += sin(x*0.03732);
-            heights[i] += sin(x*0.083)*0.4;
+            heights[i] = calcHeight(x);
         }
 
         vector<vec2f> data;
@@ -171,6 +182,17 @@ public:
         mesh = Mesh(format);
         mesh.setVertexData(&data[0], data.size());
         mesh.setPrimitiveType(Mesh::TRIANGLES);
+
+        vector<b2Vec2> v;
+        for(int i = 0 ; i < CHUNK_SIZE+1; i++) {
+            v.push_back(b2Vec2((pos*CHUNK_SIZE+i)*CHUNK_RESOLUTION, heights[i]));
+        }
+
+        b2ChainShape chain;
+        chain.CreateChain(&v[0], v.size());
+
+        chain.SetPrevVertex(b2Vec2(3.0f, 1.0f));
+        chain.SetNextVertex(b2Vec2(-2.0f, 0.0f));
     }
 };
 
