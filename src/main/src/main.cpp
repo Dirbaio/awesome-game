@@ -331,9 +331,13 @@ int main() {
 			window.setDisplayMode(Window::getFullscreenModes()[12]);
 
         if(Keyboard::pressed(Keyboard::Right))
-            p.body->ApplyLinearImpulse(b2Vec2(0.2, 0), b2Vec2(0, 0), true);
+            p.body->ApplyForceToCenter(b2Vec2(0.4, 0), true);
         if(Keyboard::pressed(Keyboard::Left))
-            p.body->ApplyLinearImpulse(b2Vec2(-0.2, 0), b2Vec2(0, 0), true);
+            p.body->ApplyForceToCenter(b2Vec2(-0.4, 0), true);
+        if(Keyboard::pressed(Keyboard::UP))
+            p.body->ApplyForceToCenter(b2Vec2(0, 0.4), true);
+        if(Keyboard::pressed(Keyboard::Down))
+            p.body->ApplyForceToCenter(b2Vec2(0, -0.4), true);
         float32 timeStep = 1.0f / 60.f;
         int32 velocityIterations = 10;
         int32 positionIterations = 8;
