@@ -134,7 +134,65 @@ void findAssetPath() {
 	VBE_ASSERT(false, "Can't find assets folder!");
 }
 
+const int CHUNK_SIZE = 256;
+const float CHUNK_RESOLUTION = 0.1f;
+const float CHUNK_DEEP = 100;
+class GroundChunk {
+public:
+    vector<float> heights;
+    Mesh mesh;
+    int pos;
 
+    GroundChunk(int pos) {
+        this->pos = pos;
+
+        heights.resize(CHUNK_SIZE+1);
+        for(int i = 0 ; i < CHUNK_SIZE+1; i++) {
+            float x = i + pos * CHUNK_SIZE;
+            heights[i] += sin(x*0.04);
+            heights[i] += sin(x*0.03732);
+            heights[i] += sin(x*0.083)*0.4;
+        }
+
+        vector<vec2f> data;
+        for(int i = 0 ; i < CHUNK_SIZE+1; i++) {
+            data.push_back(vec2f((i+0)*CHUNK_RESOLUTION, heights[i]-CHUNK_DEEP));
+            data.push_back(vec2f((i+1)*CHUNK_RESOLUTION, heights[i+1]-CHUNK_DEEP));
+            data.push_back(vec2f((i+1)*CHUNK_RESOLUTION, heights[i+1]));
+
+            data.push_back(vec2f((i+0)*CHUNK_RESOLUTION, heights[i]-CHUNK_DEEP));
+            data.push_back(vec2f((i+0)*CHUNK_RESOLUTION, heights[i]));
+            data.push_back(vec2f((i+1)*CHUNK_RESOLUTION, heights[i+1]));
+        }
+
+        Vertex::Format format({
+            Vertex::Attribute("a_position", Vertex::Attribute::Float, 2)
+        });
+        mesh = Mesh(format);
+        mesh.setVertexData(&data[0], data.size());
+        mesh.setPrimitiveType(Mesh::TRIANGLES);
+    }
+};
+
+const int GROUND_LEN = 8;
+class Ground {
+    vector<GroundChunk*> chunks;
+
+    Ground() {
+        chunks.resize(GROUND_LEN);
+        load(0);
+    }
+
+    void load(int x) {
+        for(int i = 0; i < GROUND_LEN; i++) {
+            int pos = i + x;
+            int idx = pos % GROUND_LEN;
+            if(chunks[idx]->pos != pos)
+                delete chunks[idx];
+            chunks[idx] = new GroundChunk(pos);
+        }
+    }
+};
 
 int main() {
 	findAssetPath();
@@ -157,10 +215,12 @@ int main() {
 
 	Texture2D awesome = Texture2D::load(Storage::openAsset("awesomeface.png"));
 
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    GroundChunk chunk(2);
 
 	while(true) {
 		window.update();
@@ -190,34 +250,29 @@ int main() {
 
 		// Projection matrix.
 		float aspect = float(window.getSize().x)/window.getSize().y;
-        mat4f projection = glm::perspective(1.04719f, aspect, 0.01f, 100.0f);
+        float zoom = 8.0f;
+        mat4f projection = glm::ortho(-zoom*aspect, zoom*aspect, -zoom, zoom);
 
 		// View matrix.
-		mat4f view = glm::lookAt(vec3f(1.0, 1.0, 1.0)*3.0f, vec3f(0, 0, 0), vec3f(0, 1, 0));
+//		mat4f view = glm::lookAt(vec3f(1.0, 1.0, 1.0)*3.0f, vec3f(0, 0, 0), vec3f(0, 1, 0));
 
 		// Model matrix.
 		float t = Clock::getSeconds();
         mat4f model = glm::rotate(mat4f(1.0f), t*2.0f, vec3f(0.0, 1.0, 0.0));
+        model = glm::scale(model, vec3f(0.5f));
 
 		// Normal matrix
 		mat3f normal = glm::inverse(glm::transpose(mat3f(model)));
 
-		// Draw crazy awesome cube. :)
-		glClear(GL_DEPTH_BUFFER_BIT);
-		cubeShader.uniform("mvp")->set(projection*view*model);
-		cubeShader.uniform("norm")->set(normal);
-		cubeShader.uniform("tex")->set(awesome);
-		cube.draw(cubeShader);
+        // Draw crazy awesome cube. :)
+        cubeShader.uniform("mvp")->set(projection*model);
+        cubeShader.uniform("norm")->set(normal);
+        cubeShader.uniform("tex")->set(awesome);
+        cube.draw(cubeShader);
 
-		for(const Touch::Finger& f : Touch::getFingers()) {
-			// Draw fullscreen quad with fancy shader.
-			vec2f p = f.position();
-			p.x = p.x*2.0f - 1.0f;
-			p.y = 1.0f - p.y*2.0f;
-			quadShader.uniform("u_position")->set(p);
-			quadShader.uniform("u_size")->set(vec2f(0.15f, 0.15f));
-			quad.draw(quadShader);
-		}
+        // Draw crazy awesome cube. :)
+        quadShader.uniform("mvp")->set(projection);
+        chunk.mesh.draw(quadShader);
 
 
 		window.swapBuffers();
