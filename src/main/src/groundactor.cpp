@@ -88,13 +88,19 @@ GroundActor::GroundActor(GameScene* scene)
     load(0);
 }
 
+GroundActor::~GroundActor() {
+    for (GroundChunk * chunk : chunks) {
+        delete chunk;
+    }
+}
+
 void GroundActor::load(int x) {
     x = int(x / CHUNK_RESOLUTION / CHUNK_SIZE) - GROUND_LEN/2;
     for(int i = 0; i < GROUND_LEN; i++) {
         int pos = i + x;
         int idx = ((pos % GROUND_LEN) + GROUND_LEN) % GROUND_LEN;
         if(!chunks[idx] || chunks[idx]->pos != pos) {
-            if(!chunks[idx])
+            if(chunks[idx])
                 delete chunks[idx];
             chunks[idx] = new GroundChunk(this->body, pos, &pn);
         }

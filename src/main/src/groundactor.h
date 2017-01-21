@@ -12,6 +12,7 @@ public:
     PerlinNoise pn;
 
     GroundActor(GameScene* scene);
+    ~GroundActor();
     void load(int x);
     void draw();
 };
