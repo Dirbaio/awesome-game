@@ -30,8 +30,12 @@ void Player::update() {
     WebSocketInput::PlayerState input = scene->getPlayerInput(letter);
     if(input == WebSocketInput::DOWN)
         body->ApplyForceToCenter(b2Vec2(0, -DOWN_FORCE), true);
-    if(input == WebSocketInput::UP)
-        body->ApplyForceToCenter(b2Vec2(0, UP_FORCE), true);
+    if(input == WebSocketInput::UP) {
+        b2ContactEdge* e = body->GetContactList();
+        if(e != nullptr) {
+            body->SetLinearVelocity(body->GetLinearVelocity() + b2Vec2(0, 10));
+        }
+    }
 }
 
 void Player::draw() {
