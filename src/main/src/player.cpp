@@ -30,16 +30,21 @@ void Player::update() {
     WebSocketInput::PlayerState input = scene->getPlayerInput(letter);
     if(input == WebSocketInput::DOWN)
         body->ApplyForceToCenter(b2Vec2(0, -DOWN_FORCE), true);
+
     if(input == WebSocketInput::UP) {
         b2ContactEdge* e = body->GetContactList();
         int ct = 0;
         b2Vec2 lol(0, 0);
         while(e != nullptr) {
             if(e->contact->IsTouching()) {
-                b2Vec2 n = e->contact->GetManifold()->localNormal;
+                b2WorldManifold wm;
+                e->contact->GetWorldManifold(&wm);
+                b2Vec2 n = wm.normal;
+                b2Vec2 d = body->GetPosition() - wm.points[0]; // lolol
+                float dotito = b2Dot(n, d);
+                if(dotito < 0) n = -1.0f * n;
                 lol += n;
                 ct++;
-                break;
             }
             e = e->next;
         }
