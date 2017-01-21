@@ -1,7 +1,8 @@
 #ifndef RESOURCES_H
 #define RESOURCES_H
 
-#include<string>
+#include <string>
+#include <vector>
 #include <VBE/VBE.hpp>
 
 using namespace std;
@@ -10,7 +11,7 @@ extern mat4f projection;
 extern MeshIndexed quadMesh;
 extern ShaderProgram quadShader;
 extern ShaderProgram groundShader;
-extern Texture2D* awesome;
+extern std::vector<Texture2D*> faces;
 
 void loadAssets();
 string findAssetPath();

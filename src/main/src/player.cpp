@@ -11,14 +11,14 @@ Player::Player(GameScene* scene, char letter, vec2f pos) : Actor(scene) {
     this->letter = letter;
 
     b2CircleShape circle;
-    circle.m_radius = 1.0f;
+    circle.m_radius = 2.5f;
 
     b2BodyDef def;
     def.type = b2_dynamicBody;
     def.position.Set(pos.x, pos.y);
     b2Body* body = scene->world.CreateBody(&def);
     b2FixtureDef fixtureDef;
-    fixtureDef.friction = 0.1;
+    fixtureDef.friction = 0.05;
     fixtureDef.shape = &circle;
     fixtureDef.density = 1;
     body->CreateFixture(&fixtureDef);
@@ -39,5 +39,6 @@ void Player::update() {
 }
 
 void Player::draw() {
-    drawQuad(*awesome, getPosition(), 1.0f, getAngle());
+    Texture2D* face = faces[letter%faces.size()];
+    drawQuad(*face, getPosition(), 3.0f, getAngle()/2);
 }

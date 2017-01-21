@@ -2,13 +2,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include<vector>
+#include <algorithm>    // std::shuffle
+#include <random>       // std::default_random_engine
 using namespace std;
 
 mat4f projection;
 MeshIndexed quadMesh;
 ShaderProgram quadShader;
 ShaderProgram groundShader;
-Texture2D* awesome;
+std::vector<Texture2D*> faces;
 
 
 bool isDir(const char* path) {
@@ -78,5 +80,10 @@ void loadAssets() {
     groundShader = ShaderProgram(Storage::openAsset("ground.vert"), Storage::openAsset("ground.frag"));
     quadShader = ShaderProgram(Storage::openAsset("quad.vert"), Storage::openAsset("quad.frag"));
     quadMesh = createQuad();
-    awesome = new Texture2D(Texture2D::load(Storage::openAsset("awesomeface.png")));
+    faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset("awesomeface.png"))));
+    faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset("A.png"))));
+    faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset("B.png"))));
+    faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset("C.png"))));
+    faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset("D.png"))));
+    shuffle(faces.begin(), faces.end(), std::default_random_engine());
 }
