@@ -3,6 +3,8 @@
 #include "player.h"
 #include "assets.h"
 
+const float INITIAL_HEIGHT = 25.f;
+
 GameScene::GameScene(WebSocketInput* i) : input(i) {
     ground = new GroundActor(this);
     addActor(ground);
@@ -10,7 +12,7 @@ GameScene::GameScene(WebSocketInput* i) : input(i) {
     int x = 0;
     for (char c :  input->getPlayers()){
         cout << "Recovering player " << c << endl;
-        vec2f pos(x++, 10.f);
+        vec2f pos(x++, INITIAL_HEIGHT);
         Player* p = new Player(this, c, pos);
         addActor(p);
         players[c] = p;
@@ -18,20 +20,22 @@ GameScene::GameScene(WebSocketInput* i) : input(i) {
 }
 
 void GameScene::update() {
-    center = vec3f (0,0,0);
-    if (players.size() != 0) {
-        for (auto p : players) {
-            auto pos = p.second->getPosition();
-            center.x += pos.x;
-            center.y += pos.y;
-        }
-        center /= players.size();
+    tl=vec3f(999999999.f,999999999.f,0.f);
+    br=vec3f(-999999999.f,-999999999.f,0.f);
+    for (auto p : players) {
+        auto pos = p.second->getPosition();
+        tl.x = min(tl.x, pos.x);
+        tl.y = min(tl.y, pos.y);
+        br.x = max(br.x, pos.x);
+        br.y = max(br.y, pos.y);
     }
+    center = tl+((br-tl)/2.f);
+
     ground->load(center.x);
 
     if(Keyboard::justPressed(Keyboard::Return)){
         if (players.find('z') == players.end()) {
-            vec2f pos(center.x, center.y+10.f);
+            vec2f pos(center.x, center.y+INITIAL_HEIGHT);
             Player* p = new Player(this, 'z', pos);
             addActor(p);
             players['z'] = p;
@@ -39,7 +43,7 @@ void GameScene::update() {
     }
 
     for (char c : input->connectedPlayers()){
-        vec2f pos(center.x, center.y+10.f);
+        vec2f pos(center.x, center.y+INITIAL_HEIGHT);
         Player* p = new Player(this, c, pos);
         addActor(p);
         players[c] = p;
@@ -60,22 +64,12 @@ void GameScene::update() {
 extern Window* window;
 
 void GameScene::draw() {
-    vec3f tl(99999999.f,9999999.f,0.f), br(-999999.f,-999999.f,0.f);
-    if (players.size() != 0) {
-        for (auto p : players) {
-            auto pos = p.second->getPosition();
-            tl.x = min(tl.x, pos.x);
-            tl.y = min(tl.y, pos.y);
-            br.x = max(br.x, pos.x);
-            br.y = max(br.y, pos.y);
-        }
-    }
 
     //Camera hacks
     float aspect = float(window->getSize().x)/window->getSize().y;
     float dist = max(abs(br.x-tl.x),abs(br.y-tl.y));
     dist /=2.2;
-    dist = max(dist , 10.f);
+    dist = max(dist , 14.f);
     projection = glm::ortho(-dist*aspect, dist*aspect, -dist, dist);
     projection = glm::translate(projection, -center);
 

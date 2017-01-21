@@ -10,8 +10,10 @@ class GameScene : public Scene {
 public:
     GroundActor* ground;
     map<char, Player*> players;
-    vec3f center;
     WebSocketInput* input;
+    vec3f center;
+    vec3f tl;
+    vec3f br;
 
     GameScene(WebSocketInput* input);
     void update();

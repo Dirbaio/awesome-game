@@ -2,7 +2,7 @@
 #include "assets.h"
 
 
-const float DOWN_FORCE = 1000.0f;
+const float DOWN_FORCE = 2000.0f;
 const float UP_FORCE = 0.5f;
 const float SIDES_FORCE = 5.0f;
 
@@ -20,7 +20,7 @@ Player::Player(GameScene* scene, char letter, vec2f pos) : Actor(scene) {
     b2FixtureDef fixtureDef;
     fixtureDef.friction = 0.05;
     fixtureDef.shape = &circle;
-    fixtureDef.density = 2;
+    fixtureDef.density = 3;
     body->CreateFixture(&fixtureDef);
 
     this->setBody(body);
@@ -54,6 +54,14 @@ void Player::update() {
             body->SetLinearVelocity(body->GetLinearVelocity() + 20.0f * n);
         }
     }
+
+    float distance = getPositionVec3().x-scene->br.x;
+
+    float communism = 60.f;
+    communism += -fabs(distance*10.f);
+    body->ApplyForceToCenter(b2Vec2(communism,0.f), true);
+    cout << distance << endl;
+
 }
 
 void Player::draw() {

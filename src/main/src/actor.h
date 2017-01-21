@@ -21,6 +21,7 @@ public:
 
     void setBody(b2Body* body);
     vec2f getPosition();
+    vec3f getPositionVec3();
     float getAngle();
 };
 

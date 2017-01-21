@@ -19,9 +19,9 @@ public:
 
     float calcHeight(int x) {
         float wave = 0;
-        wave += pn->noise(x*0.007f, 0.5, 0.5)*10.f;
+        wave += pn->noise(x*0.0033f, 0.5, 0.5)*28.f;
         //wave += sin(x*0.008);
-        wave -= x*0.016;
+        //wave -= x*0.010;
         return wave;
     }
 

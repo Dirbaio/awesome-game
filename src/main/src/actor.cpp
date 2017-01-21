@@ -36,6 +36,11 @@ vec2f Actor::getPosition() {
     return vec2f(body->GetPosition().x, body->GetPosition().y);
 }
 
+vec3f Actor::getPositionVec3() {
+    return vec3f(body->GetPosition().x, body->GetPosition().y, 0.f);
+}
+
+
 float Actor::getAngle() {
     return body->GetAngle();
 }
