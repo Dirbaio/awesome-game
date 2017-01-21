@@ -11,7 +11,7 @@ Player::Player(GameScene* scene, char letter, vec2f pos) : Actor(scene) {
     this->letter = letter;
 
     b2CircleShape circle;
-    circle.m_radius = 2.5f;
+    circle.m_radius = 1.f;
 
     b2BodyDef def;
     def.type = b2_dynamicBody;
@@ -53,5 +53,5 @@ void Player::update() {
 
 void Player::draw() {
     Texture2D* face = faces[letter%faces.size()];
-    drawQuad(*face, getPosition(), 3.0f, getAngle()/2);
+    drawQuad(*face, getPosition(), 1.0f, getAngle()/2);
 }
