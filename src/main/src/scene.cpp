@@ -27,8 +27,10 @@ void Scene::update() {
     for(auto it = actors.begin(); it != actors.end();) {
         auto it2 = it;
         it2++;
-        if((*it)->removed)
+        if((*it)->removed) {
             actors.erase(it);
+            delete *it;
+        }
         it = it2;
     }
 }
