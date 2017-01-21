@@ -13,14 +13,14 @@ include(../common.pri)
 
 SOURCES += \
     src/main.cpp \
-    src/websocketinput.cpp \
     src/actor.cpp \
     src/player.cpp \
     src/scene.cpp \
     src/gamescene.cpp \
     src/groundactor.cpp \
     src/assets.cpp \
-    src/webserver.cpp
+    src/webserver.cpp \
+    src/websocketinput.cpp
 
 OTHER_FILES += \
     ../../assets/awesomeface.png \
@@ -44,4 +44,6 @@ HEADERS += \
     src/scene.h \
     src/gamescene.h \
     src/groundactor.h \
-    src/assets.h
+    src/assets.h \
+    src/websocketinput.h \
+    src/webserver.h \
