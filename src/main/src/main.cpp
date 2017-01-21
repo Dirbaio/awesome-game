@@ -261,14 +261,14 @@ class Player {
 public:
     b2Body* body;
 
-    Player() {
+	Player(float x, float y) {
 
         b2CircleShape circle;
         circle.m_radius = 1.0f;
 
         b2BodyDef def;
         def.type = b2_dynamicBody;
-        def.position.Set(0.0f, 10.0f);
+		def.position.Set(x, y);
         body = world.CreateBody(&def);
         b2FixtureDef fixtureDef;
         fixtureDef.friction = 0.5;
@@ -309,19 +309,47 @@ int main() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Ground g;
-    Player p;
+	map<char, Player*> players;
+
 	while(true) {
 		window.update();
 
 		if(Keyboard::pressed(Keyboard::Escape) || window.isClosing())
 			break;
 
-		if(Keyboard::pressed(Keyboard::A))
-			cout<<"Pressed A!"<<endl;
-		if(Keyboard::justPressed(Keyboard::A))
-			cout<<"Just Pressed A!"<<endl;
-		if(Keyboard::justReleased(Keyboard::A))
-			cout<<"Just Released A!"<<endl;
+		vec3f center(0,0,0);
+		if (players.size() != 0) {
+			for (auto p : players) {
+				auto pos = p.second->getPosition();
+				center.x += pos.x;
+				center.y += pos.y;
+			}
+			center /= players.size();
+		}
+
+		if(Keyboard::justPressed(Keyboard::Return)){
+			if (!players['z']) {
+				players['z'] = new Player(center.x, center.y+10.f);
+			}
+		}
+
+		for (char c : input.connectedPlayers()){
+			players[c] = new Player(center.x, center.y+10.f);
+		}
+
+		for (char c : input.disconnectedPlayers()){
+			delete players[c];
+			players.erase(c);
+		}
+
+		for (auto p : players) {
+			WebSocketInput::PlayerState s = input.getPlayerState(p.first);
+			if (s == WebSocketInput::DOWN) {
+				p.second->body->ApplyForceToCenter(b2Vec2(0, -0.4), true);
+			} else if (s == WebSocketInput::UP) {
+				p.second->body->ApplyForceToCenter(b2Vec2(0, 0.4), true);
+			}
+		}
 
 		if(Keyboard::pressed(Keyboard::Q))
 			window.setDisplayMode(Window::getFullscreenModes()[0]);
@@ -331,13 +359,14 @@ int main() {
 			window.setDisplayMode(Window::getFullscreenModes()[12]);
 
         if(Keyboard::pressed(Keyboard::Right))
-            p.body->ApplyForceToCenter(b2Vec2(0.4, 0), true);
+			if (players['z']) players['z']->body->ApplyForceToCenter(b2Vec2(0.4, 0), true);
         if(Keyboard::pressed(Keyboard::Left))
-            p.body->ApplyForceToCenter(b2Vec2(-0.4, 0), true);
+			if (players['z']) players['z']->body->ApplyForceToCenter(b2Vec2(-0.4, 0), true);
         if(Keyboard::pressed(Keyboard::UP))
-            p.body->ApplyForceToCenter(b2Vec2(0, 0.4), true);
+			if (players['z']) players['z']->body->ApplyForceToCenter(b2Vec2(0, 0.4), true);
         if(Keyboard::pressed(Keyboard::Down))
-            p.body->ApplyForceToCenter(b2Vec2(0, -0.4), true);
+			if (players['z']) players['z']->body->ApplyForceToCenter(b2Vec2(0, -0.4), true);
+
         float32 timeStep = 1.0f / 60.f;
         int32 velocityIterations = 10;
         int32 positionIterations = 8;
@@ -353,13 +382,15 @@ int main() {
 		float aspect = float(window.getSize().x)/window.getSize().y;
         float zoom = 15.0f;
         projection = glm::ortho(-zoom*aspect, zoom*aspect, -zoom, zoom);
-        projection = glm::translate(projection, vec3f(-p.getPosition().x, -p.getPosition().y, 0));
 
-        float t = Clock::getSeconds()*50;
+		projection = glm::translate(projection, -center);
 
-        g.load(p.getPosition().x);
+		g.load(center.x);
         g.draw();
-        p.draw();
+
+		for (auto p : players) {
+			p.second->draw();
+		}
 
 		window.swapBuffers();
 	}
