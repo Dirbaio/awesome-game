@@ -57,8 +57,28 @@ void GameScene::update() {
     Scene::update();
 }
 
+extern Window* window;
+
 void GameScene::draw() {
+    vec3f tl(99999999.f,9999999.f,0.f), br(-999999.f,-999999.f,0.f);
+    if (players.size() != 0) {
+        for (auto p : players) {
+            auto pos = p.second->getPosition();
+            tl.x = min(tl.x, pos.x);
+            tl.y = min(tl.y, pos.y);
+            br.x = max(br.x, pos.x);
+            br.y = max(br.y, pos.y);
+        }
+    }
+
+    //Camera hacks
+    float aspect = float(window->getSize().x)/window->getSize().y;
+    float dist = max(abs(br.x-tl.x),abs(br.y-tl.y));
+    dist /=2.2;
+    dist = max(dist , 10.f);
+    projection = glm::ortho(-dist*aspect, dist*aspect, -dist, dist);
     projection = glm::translate(projection, -center);
+
     Scene::draw();
 }
 

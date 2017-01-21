@@ -9,6 +9,7 @@
 #include "websocketinput.h"
 
 using namespace std;
+Window* window;
 
 int main() {
     WebServer web(findAssetPath()+"index.html");
@@ -18,7 +19,7 @@ int main() {
     ContextSettings settings;
     settings.versionMajor = 3;
     settings.versionMinor = 3;
-    Window window (Window::DisplayMode::createWindowedMode(800, 600), settings);
+    window = new Window(Window::DisplayMode::createWindowedMode(800, 600), settings);
 
     loadAssets();
 
@@ -30,26 +31,21 @@ int main() {
     Scene* s = new GameScene(&input);
 
     while(true) {
-        window.update();
-        if(Keyboard::pressed(Keyboard::Escape) || window.isClosing())
+        window->update();
+        if(Keyboard::pressed(Keyboard::Escape) || window->isClosing())
             break;
         if(Keyboard::pressed(Keyboard::Q))
-            window.setDisplayMode(Window::getFullscreenModes()[0]);
+            window->setDisplayMode(Window::getFullscreenModes()[0]);
         if(Keyboard::pressed(Keyboard::W))
-            window.setDisplayMode(Window::DisplayMode::createWindowedMode(800, 600));
+            window->setDisplayMode(Window::DisplayMode::createWindowedMode(800, 600));
 
         s->update();
 
         // Set viewport
-        glViewport(0, 0, window.getSize().x, window.getSize().y);
+        glViewport(0, 0, window->getSize().x, window->getSize().y);
 
         glClearColor(0.7f, 0.9f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        // Projection matrix.
-        float aspect = float(window.getSize().x)/window.getSize().y;
-        float zoom = 13.0f;
-        projection = glm::ortho(-zoom*aspect, zoom*aspect, -zoom, zoom);
 
         // Draw ALL the things!!!!
         s->draw();
@@ -59,6 +55,6 @@ int main() {
             delete s;
             s = next;
         }
-        window.swapBuffers();
+        window->swapBuffers();
     }
 }
