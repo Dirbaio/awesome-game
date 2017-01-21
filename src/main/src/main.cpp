@@ -5,11 +5,13 @@
 #include <Box2D/Box2D.h>
 #include "assets.h"
 #include "gamescene.h"
+#include "webserver.h"
 
 using namespace std;
 
-
 int main() {
+    WebServer web(findAssetPath()+"index.html");
+
     // Create screen
     ContextSettings settings;
     settings.versionMajor = 3;

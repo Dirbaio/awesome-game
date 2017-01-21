@@ -20,31 +20,21 @@ bool isDir(const char* path) {
     return (info.st_mode & S_IFDIR) != 0;
 }
 
-void findAssetPath() {
-    if(isDir("assets/")) {
-        Storage::setAssetPath("assets/");
-        return;
-    }
-    if(isDir("../assets/")) {
-        Storage::setAssetPath("../assets/");
-        return;
-    }
-    if(isDir("../../assets/")) {
-        Storage::setAssetPath("../../assets/");
-        return;
-    }
-    if(isDir("../../../assets/")) {
-        Storage::setAssetPath("../../../assets/");
-        return;
-    }
-    if(isDir("../../../../assets/")) {
-        Storage::setAssetPath("../../../../assets/");
-        return;
-    }
+string findAssetPath() {
+    if(isDir("assets/"))
+        return "assets/";
+    if(isDir("../assets/"))
+        return "../assets/";
+    if(isDir("../../assets/"))
+        return "../../assets/";
+    if(isDir("../../../assets/"))
+        return "../../../assets/";
+    if(isDir("../../../../assets/"))
+        return "../../../../assets/";
 
     VBE_ASSERT(false, "Can't find assets folder!");
+    return "";
 }
-
 
 MeshIndexed createQuad() {
     // Create the quad mesh. Example of indexed mesh.
@@ -83,7 +73,7 @@ void drawQuad(Texture2D& tex, vec2f pos, float radius, float roto) {
 }
 
 void loadAssets() {
-    findAssetPath();
+    Storage::setAssetPath(findAssetPath());
 
     groundShader = ShaderProgram(Storage::openAsset("ground.vert"), Storage::openAsset("ground.frag"));
     quadShader = ShaderProgram(Storage::openAsset("quad.vert"), Storage::openAsset("quad.frag"));

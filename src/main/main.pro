@@ -19,7 +19,8 @@ SOURCES += \
     src/scene.cpp \
     src/gamescene.cpp \
     src/groundactor.cpp \
-    src/assets.cpp
+    src/assets.cpp \
+    src/webserver.cpp
 
 OTHER_FILES += \
     ../../assets/awesomeface.png \
