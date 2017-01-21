@@ -47,7 +47,7 @@ WebSocketInput::WebSocketInput() {
         cout << "Server: Sending player id: " << player << endl;
 
         auto send_stream=make_shared<WsServer::SendStream>();
-        *send_stream << ("<img style='width:180px; height:180px;' src='/"+facePaths[faceIndex(player)]+"'>");
+        *send_stream << ("<img class='player' style='width:180px; height:180px;' src='/"+facePaths[faceIndex(player)]+"'>");
         //server.send is an asynchronous function
         server.send(connection, send_stream, [](const boost::system::error_code& ec){
             if(ec) {
