@@ -11,7 +11,13 @@ MeshIndexed quadMesh;
 ShaderProgram quadShader;
 ShaderProgram groundShader;
 std::vector<Texture2D*> faces;
-
+std::vector<std::string> facePaths = {
+    {"awesomeface.png"},
+    {"A.png"},
+    {"B.png"},
+    {"C.png"},
+    {"D.png"}
+};
 
 bool isDir(const char* path) {
     struct stat info;
@@ -21,6 +27,7 @@ bool isDir(const char* path) {
 
     return (info.st_mode & S_IFDIR) != 0;
 }
+
 
 string findAssetPath() {
     if(isDir("assets/"))
@@ -80,10 +87,12 @@ void loadAssets() {
     groundShader = ShaderProgram(Storage::openAsset("ground.vert"), Storage::openAsset("ground.frag"));
     quadShader = ShaderProgram(Storage::openAsset("quad.vert"), Storage::openAsset("quad.frag"));
     quadMesh = createQuad();
-    faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset("awesomeface.png"))));
-    faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset("A.png"))));
-    faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset("B.png"))));
-    faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset("C.png"))));
-    faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset("D.png"))));
-    shuffle(faces.begin(), faces.end(), std::default_random_engine(time(NULL)));
+    shuffle(facePaths.begin(), facePaths.end(), std::default_random_engine(time(NULL)));
+    for (const string& s : facePaths) {
+        faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset(s))));
+    }
+}
+
+int faceIndex(char c) {
+    return c%facePaths.size();
 }

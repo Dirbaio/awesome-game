@@ -33,7 +33,7 @@ DISTFILES += \
     resources.rc \
     manifest.xml \
     ../../assets/quad2.frag \
-    ../../client.html \
+    ../../assets/index.html \
     ../../assets/ground.frag \
     ../../assets/ground.vert \
     ../../assets/quad.frag \

@@ -12,7 +12,13 @@ using namespace std;
 Window* window;
 
 int main() {
-    WebServer web(findAssetPath()+"index.html");
+    string assetPath = findAssetPath();
+    map<string, string> webassets;
+    webassets["/"] = assetPath +"index.html";
+    for (const string& s : facePaths) {
+        webassets["/"+s] = assetPath+s;
+    }
+    WebServer web(webassets);
     WebSocketInput input;
 
     // Create screen

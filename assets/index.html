@@ -57,7 +57,7 @@ window.onload=function(){
   ws=new WebSocket("ws://"+window.location.hostname+":8080/");
   ws.onmessage=function(evt){
     console.log(evt.data);
-    document.getElementById("player_id").innerHTML = "Player "+evt.data;
+	document.getElementById("player_id").innerHTML = evt.data;
     document.getElementById("button").style.display="";
   };
 }

@@ -12,9 +12,11 @@ extern MeshIndexed quadMesh;
 extern ShaderProgram quadShader;
 extern ShaderProgram groundShader;
 extern std::vector<Texture2D*> faces;
+extern std::vector<std::string> facePaths;
 
 void loadAssets();
 string findAssetPath();
 void drawQuad(Texture2D& tex, vec2f pos, float radius, float roto);
+int faceIndex(char c);
 
 #endif // RESOURCES_H

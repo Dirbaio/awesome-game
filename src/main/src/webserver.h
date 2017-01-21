@@ -5,13 +5,14 @@
 #include <fstream>
 #include <boost/filesystem.hpp>
 #include <memory>
+#include <map>
 
 #include "server_http.hpp"
 
 class WebServer {
 
 public:
-	WebServer(const std::string& file);
+    WebServer(std::map<std::string, std::string> pathsToFiles);
 	~WebServer();
 
 private:

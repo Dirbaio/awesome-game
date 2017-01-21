@@ -60,11 +60,10 @@ void Player::update() {
     float communism = 60.f;
     communism += -fabs(distance*10.f);
     body->ApplyForceToCenter(b2Vec2(communism,0.f), true);
-    cout << distance << endl;
 
 }
 
 void Player::draw() {
-    Texture2D* face = faces[letter%faces.size()];
+    Texture2D* face = faces[faceIndex(letter)];
     drawQuad(*face, getPosition(), 1.3f, getAngle()/4);
 }

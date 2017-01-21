@@ -29,14 +29,19 @@ void WebServer::default_resource_send(const HttpServer &server, const shared_ptr
 }
 
 
-WebServer::WebServer(const string& s) {
+WebServer::WebServer(map<string, string> paths) {
 	server.config.port=8000;
 
 	cout << "WebServer: Listening on port " << server.config.port << endl;
-	server.resource["^/$"]["GET"]=[this,s](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-		try {
+    server.default_resource["GET"]=[this,paths](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+        try {
+            auto p = paths.find(request->path);
+            if (p == paths.end()) {
+                throw invalid_argument("invalid path");
+            }
+            string s = p->second;
 			auto ifs=make_shared<ifstream>();
-			ifs->open(s, ifstream::in | ios::binary | ios::ate);
+            ifs->open(s, ifstream::in | ios::binary | ios::ate);
 			if(*ifs) {
 				cout << "WebServer: Serving " << s << " to " << request->remote_endpoint_address << endl;
 
@@ -50,7 +55,7 @@ WebServer::WebServer(const string& s) {
 				throw invalid_argument("could not read file");
 		}
 		catch(const exception &e) {
-			string content="Could not open path "+s+": "+e.what();
+            string content="Could not open path "+request->path+": "+e.what();
 			*response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << content.length() << "\r\n\r\n" << content;
 		}
 	};
