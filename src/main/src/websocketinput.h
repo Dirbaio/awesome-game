@@ -18,6 +18,14 @@ public:
     WebSocketInput();
     ~WebSocketInput();
 
+	std::vector<char> getPlayers() {
+		std::vector<char> ret;
+		for (auto p : players) {
+			ret.push_back(p.second);
+		}
+		return ret;
+	}
+
     std::vector<char> connectedPlayers() {
 		std::lock_guard<std::mutex> guard(lock);
         auto ret = connected;

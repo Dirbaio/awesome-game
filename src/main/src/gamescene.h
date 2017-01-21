@@ -10,10 +10,10 @@ class GameScene : public Scene {
 public:
     GroundActor* ground;
     map<char, Player*> players;
-    WebSocketInput input;
     vec3f center;
+    WebSocketInput* input;
 
-    GameScene();
+    GameScene(WebSocketInput* input);
     void update();
     void draw();
     WebSocketInput::PlayerState getPlayerInput(char letter);

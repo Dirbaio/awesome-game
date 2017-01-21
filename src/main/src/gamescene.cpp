@@ -3,11 +3,20 @@
 #include "player.h"
 #include "assets.h"
 
-GameScene::GameScene() {
+GameScene::GameScene(WebSocketInput* i) : input(i) {
     ground = new GroundActor(this);
     addActor(ground);
+
+    int x = 0;
+    for (char c :  input->getPlayers()){
+        cout << "Recovering player " << c << endl;
+        vec2f pos(x++, 10.f);
+        Player* p = new Player(this, c, pos);
+        addActor(p);
+        players[c] = p;
+    }
 }
-\
+
 void GameScene::update() {
     center = vec3f (0,0,0);
     if (players.size() != 0) {
@@ -27,16 +36,20 @@ void GameScene::update() {
         players['z'] = p;
     }
 
-    for (char c : input.connectedPlayers()){
+    for (char c : input->connectedPlayers()){
         vec2f pos(center.x, center.y+10.f);
         Player* p = new Player(this, c, pos);
         addActor(p);
         players[c] = p;
     }
 
-    for (char c : input.disconnectedPlayers()) {
+    for (char c : input->disconnectedPlayers()) {
         players[c]->remove();
         players.erase(c);
+    }
+
+    if(Keyboard::justPressed(Keyboard::R)){
+        nextScene = new GameScene(input);
     }
 
     Scene::update();
@@ -55,5 +68,5 @@ WebSocketInput::PlayerState GameScene::getPlayerInput(char letter) {
             return WebSocketInput::UP;
         return WebSocketInput::NOTHING;
     }
-    return input.getPlayerState(letter);
+    return input->getPlayerState(letter);
 }

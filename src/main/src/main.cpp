@@ -6,11 +6,13 @@
 #include "assets.h"
 #include "gamescene.h"
 #include "webserver.h"
+#include "websocketinput.h"
 
 using namespace std;
 
 int main() {
     WebServer web(findAssetPath()+"index.html");
+    WebSocketInput input;
 
     // Create screen
     ContextSettings settings;
@@ -25,7 +27,7 @@ int main() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Scene* s = new GameScene();
+    Scene* s = new GameScene(&input);
 
     while(true) {
         window.update();
