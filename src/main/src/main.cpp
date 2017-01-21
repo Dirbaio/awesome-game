@@ -150,7 +150,7 @@ void findAssetPath() {
 	VBE_ASSERT(false, "Can't find assets folder!");
 }
 
-b2World world(b2Vec2(0.0f, -10.0f));
+b2World world(b2Vec2(0.0f, -50.0f));
 
 const int CHUNK_SIZE = 256;
 const float CHUNK_RESOLUTION = 0.1f;
@@ -158,9 +158,8 @@ const float CHUNK_DEEP = 100;
 
 float calcHeight(int x) {
     float res = 0;
-    res += sin(x*0.04);
-    res += sin(x*0.03732);
-    res += sin(x*0.083)*0.4;
+    res += sin(x*0.0025)*20;
+    res += sin(x*0.01)*3;
     return res;
 }
 
@@ -271,9 +270,9 @@ public:
 		def.position.Set(x, y);
         body = world.CreateBody(&def);
         b2FixtureDef fixtureDef;
-        fixtureDef.friction = 0.5;
+        fixtureDef.friction = 0.1;
         fixtureDef.shape = &circle;
-        fixtureDef.density = 0.01;
+        fixtureDef.density = 1;
         body->CreateFixture(&fixtureDef);
     }
 
@@ -286,6 +285,10 @@ public:
     }
 };
 
+const float DOWN_FORCE = 1000.0f;
+const float UP_FORCE = 1.0f;
+const float SIDES_FORCE = 5.0f;
+
 int main() {
 	findAssetPath();
 
@@ -294,7 +297,7 @@ int main() {
 	// Create screen
 	ContextSettings settings;
 	settings.versionMajor = 3;
-	settings.versionMinor = 3;
+    settings.versionMinor = 3;
 	Window window (Window::DisplayMode::createWindowedMode(800, 600), settings);
 
     groundShader = ShaderProgram(Storage::openAsset("ground.vert"), Storage::openAsset("ground.frag"));
@@ -328,7 +331,7 @@ int main() {
 		}
 
 		if(Keyboard::justPressed(Keyboard::Return)){
-			if (!players['z']) {
+            if (players.find('z') == players.end()) {
 				players['z'] = new Player(center.x, center.y+10.f);
 			}
 		}
@@ -345,9 +348,9 @@ int main() {
 		for (auto p : players) {
 			WebSocketInput::PlayerState s = input.getPlayerState(p.first);
 			if (s == WebSocketInput::DOWN) {
-				p.second->body->ApplyForceToCenter(b2Vec2(0, -0.4), true);
+                p.second->body->ApplyForceToCenter(b2Vec2(0, -DOWN_FORCE), true);
 			} else if (s == WebSocketInput::UP) {
-				p.second->body->ApplyForceToCenter(b2Vec2(0, 0.4), true);
+                p.second->body->ApplyForceToCenter(b2Vec2(0, UP_FORCE), true);
 			}
 		}
 
@@ -359,13 +362,13 @@ int main() {
 			window.setDisplayMode(Window::getFullscreenModes()[12]);
 
         if(Keyboard::pressed(Keyboard::Right))
-			if (players['z']) players['z']->body->ApplyForceToCenter(b2Vec2(0.4, 0), true);
+            if (players.find('z') != players.end()) players['z']->body->ApplyForceToCenter(b2Vec2(SIDES_FORCE, 0), true);
         if(Keyboard::pressed(Keyboard::Left))
-			if (players['z']) players['z']->body->ApplyForceToCenter(b2Vec2(-0.4, 0), true);
+            if (players.find('z') != players.end()) players['z']->body->ApplyForceToCenter(b2Vec2(SIDES_FORCE, 0), true);
         if(Keyboard::pressed(Keyboard::UP))
-			if (players['z']) players['z']->body->ApplyForceToCenter(b2Vec2(0, 0.4), true);
+            if (players.find('z') != players.end()) players['z']->body->ApplyForceToCenter(b2Vec2(0, UP_FORCE), true);
         if(Keyboard::pressed(Keyboard::Down))
-			if (players['z']) players['z']->body->ApplyForceToCenter(b2Vec2(0, -0.4), true);
+            if (players.find('z') != players.end()) players['z']->body->ApplyForceToCenter(b2Vec2(0, -DOWN_FORCE), true);
 
         float32 timeStep = 1.0f / 60.f;
         int32 velocityIterations = 10;
@@ -375,14 +378,13 @@ int main() {
 		// Set viewport
 		glViewport(0, 0, window.getSize().x, window.getSize().y);
 
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.7f, 0.9f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Projection matrix.
 		float aspect = float(window.getSize().x)/window.getSize().y;
-        float zoom = 15.0f;
+        float zoom = 20.0f;
         projection = glm::ortho(-zoom*aspect, zoom*aspect, -zoom, zoom);
-
 		projection = glm::translate(projection, -center);
 
 		g.load(center.x);
