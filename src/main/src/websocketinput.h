@@ -4,8 +4,6 @@
 #include <map>
 #include <vector>
 
-using namespace std;
-
 class WebSocketInput {
 
 public:
@@ -38,7 +36,7 @@ public:
 private:
     typedef SimpleWeb::SocketServer<SimpleWeb::WS> WsServer;
     WsServer server;
-    thread* server_thread;
+    std::thread* server_thread;
     std::map<size_t, char> players;
     std::map<char, PlayerState> playerState;
     std::vector<char> connected;

@@ -13,7 +13,9 @@ include(../common.pri)
 
 SOURCES += \
     src/main.cpp \
-    src/websocketinput.cpp
+    src/websocketinput.cpp \
+    src/webserver.cpp
+
 
 OTHER_FILES += \
     ../../assets/awesomeface.png \

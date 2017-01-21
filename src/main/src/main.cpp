@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <Box2D/Box2D.h>
 #include "websocketinput.h"
+#include "webserver.h"
 
 using namespace std;
 
@@ -125,29 +126,25 @@ bool isDir(const char* path) {
 	return (info.st_mode & S_IFDIR) != 0;
 }
 
-void findAssetPath() {
+string findAssetPath() {
 	if(isDir("assets/")) {
-		Storage::setAssetPath("assets/");
-		return;
+		return "assets/";
 	}
 	if(isDir("../assets/")) {
-		Storage::setAssetPath("../assets/");
-		return;
+		return "../assets/";
 	}
 	if(isDir("../../assets/")) {
-		Storage::setAssetPath("../../assets/");
-		return;
+		return "../../assets/";
 	}
 	if(isDir("../../../assets/")) {
-		Storage::setAssetPath("../../../assets/");
-		return;
+		return "../../../assets/";
 	}
 	if(isDir("../../../../assets/")) {
-		Storage::setAssetPath("../../../../assets/");
-		return;
+		return "../../../../assets/";
 	}
 
 	VBE_ASSERT(false, "Can't find assets folder!");
+	return "";
 }
 
 b2World world(b2Vec2(0.0f, -50.0f));
@@ -290,7 +287,11 @@ const float UP_FORCE = 1.0f;
 const float SIDES_FORCE = 5.0f;
 
 int main() {
-	findAssetPath();
+	string assetPath = findAssetPath();
+
+	Storage::setAssetPath(assetPath);
+
+	WebServer web(assetPath+"index.html");
 
 	WebSocketInput input;
 
