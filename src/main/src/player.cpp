@@ -53,5 +53,5 @@ void Player::update() {
 
 void Player::draw() {
     Texture2D* face = faces[letter%faces.size()];
-    drawQuad(*face, getPosition(), 1.0f, getAngle()/2);
+    drawQuad(*face, getPosition(), 1.0f, getAngle()/4);
 }
