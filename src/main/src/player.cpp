@@ -58,7 +58,7 @@ void Player::update() {
     float distance = getPositionVec3().x-scene->br.x;
 
     float communism = 60.f;
-    communism += -fabs(distance*10.f);
+    communism += fabs(distance*10.f);
     body->ApplyForceToCenter(b2Vec2(communism,0.f), true);
 
 }
