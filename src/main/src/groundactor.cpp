@@ -4,7 +4,9 @@
 
 const int CHUNK_SIZE = 256;
 const float CHUNK_RESOLUTION = 0.1f;
-const float CHUNK_DEEP = 100;
+const float CHUNK_DEEP = 500;
+const int GROUND_LEN = 32;
+
 
 class GroundChunk {
 public:
@@ -72,8 +74,6 @@ public:
         groundBody->DestroyFixture(fixture);
     }
 };
-
-const int GROUND_LEN = 8;
 
 GroundActor::GroundActor(GameScene* scene)
     : Actor(scene)
