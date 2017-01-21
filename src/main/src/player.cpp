@@ -32,8 +32,21 @@ void Player::update() {
         body->ApplyForceToCenter(b2Vec2(0, -DOWN_FORCE), true);
     if(input == WebSocketInput::UP) {
         b2ContactEdge* e = body->GetContactList();
-        if(e != nullptr) {
-            body->SetLinearVelocity(body->GetLinearVelocity() + b2Vec2(0, 10));
+        int ct = 0;
+        b2Vec2 lol(0, 0);
+        while(e != nullptr) {
+            if(e->contact->IsTouching()) {
+                b2Vec2 n = e->contact->GetManifold()->localNormal;
+                lol += n;
+                ct++;
+                break;
+            }
+            e = e->next;
+        }
+
+        if(ct != 0) {
+            b2Vec2 n = (1.0f / ct) * lol;
+            body->SetLinearVelocity(body->GetLinearVelocity() + 20.0f * n);
         }
     }
 }

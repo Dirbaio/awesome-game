@@ -2,7 +2,7 @@
 #include<VBE/VBE.hpp>
 #include "actor.h"
 
-const float GRAVITY = 50.0f;
+const float GRAVITY = 70.0f;
 
 
 Scene::Scene() : world(b2Vec2(0.0f, -GRAVITY)) {
