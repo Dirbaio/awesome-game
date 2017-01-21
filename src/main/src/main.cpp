@@ -48,7 +48,7 @@ int main() {
 
         // Projection matrix.
         float aspect = float(window.getSize().x)/window.getSize().y;
-        float zoom = 8.0f;
+        float zoom = 13.0f;
         projection = glm::ortho(-zoom*aspect, zoom*aspect, -zoom, zoom);
 
         // Draw ALL the things!!!!

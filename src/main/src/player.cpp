@@ -3,7 +3,7 @@
 
 
 const float DOWN_FORCE = 1000.0f;
-const float UP_FORCE = 1.0f;
+const float UP_FORCE = 0.5f;
 const float SIDES_FORCE = 5.0f;
 
 Player::Player(GameScene* scene, char letter, vec2f pos) : Actor(scene) {
@@ -20,7 +20,7 @@ Player::Player(GameScene* scene, char letter, vec2f pos) : Actor(scene) {
     b2FixtureDef fixtureDef;
     fixtureDef.friction = 0.05;
     fixtureDef.shape = &circle;
-    fixtureDef.density = 1;
+    fixtureDef.density = 2;
     body->CreateFixture(&fixtureDef);
 
     this->setBody(body);
@@ -58,5 +58,5 @@ void Player::update() {
 
 void Player::draw() {
     Texture2D* face = faces[letter%faces.size()];
-    drawQuad(*face, getPosition(), 1.0f, getAngle()/4);
+    drawQuad(*face, getPosition(), 1.3f, getAngle()/4);
 }
