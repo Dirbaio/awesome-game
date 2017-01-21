@@ -13,7 +13,13 @@ include(../common.pri)
 
 SOURCES += \
     src/main.cpp \
-    src/websocketinput.cpp
+    src/websocketinput.cpp \
+    src/actor.cpp \
+    src/player.cpp \
+    src/scene.cpp \
+    src/gamescene.cpp \
+    src/groundactor.cpp \
+    src/assets.cpp
 
 OTHER_FILES += \
     ../../assets/awesomeface.png \
@@ -30,3 +36,11 @@ DISTFILES += \
     ../../assets/ground.vert \
     ../../assets/quad.frag \
     ../../assets/quad.vert
+
+HEADERS += \
+    src/actor.h \
+    src/player.h \
+    src/scene.h \
+    src/gamescene.h \
+    src/groundactor.h \
+    src/assets.h
