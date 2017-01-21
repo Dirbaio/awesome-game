@@ -20,7 +20,8 @@ SOURCES += \
     src/groundactor.cpp \
     src/assets.cpp \
     src/webserver.cpp \
-    src/websocketinput.cpp
+    src/websocketinput.cpp \
+    src/perlinnoise.cpp \
 
 OTHER_FILES += \
     ../../assets/awesomeface.png \
@@ -47,3 +48,4 @@ HEADERS += \
     src/assets.h \
     src/websocketinput.h \
     src/webserver.h \
+    src/perlinnoise.h \

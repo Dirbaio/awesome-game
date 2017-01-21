@@ -1,16 +1,10 @@
 #include "groundactor.h"
 #include "assets.h"
+#include "perlinnoise.h"
 
 const int CHUNK_SIZE = 256;
 const float CHUNK_RESOLUTION = 0.1f;
 const float CHUNK_DEEP = 100;
-
-float calcHeight(int x) {
-    float res = 0;
-    res += sin(x*0.0025)*20;
-    res += sin(x*0.01)*3;
-    return res;
-}
 
 class GroundChunk {
 public:
@@ -19,10 +13,21 @@ public:
     int pos;
     b2Fixture* fixture;
     b2Body* groundBody;
+    PerlinNoise* pn;
 
-    GroundChunk(b2Body* groundBody, int pos) {
-        this->groundBody = groundBody;
-        this->pos = pos;
+    float calcHeight(int x) {
+        float wave = 0;
+        wave += pn->noise(x*0.007f, 0.5, 0.5)*10.f;
+        //wave += sin(x*0.008);
+        wave -= x*0.016;
+        return wave;
+    }
+
+    GroundChunk(b2Body* _groundBody, int _pos, PerlinNoise* _pn)
+        : pos(_pos)
+        , groundBody(_groundBody)
+        , pn(_pn)
+    {
 
         heights.resize(CHUNK_SIZE+1);
         for(int i = 0 ; i < CHUNK_SIZE+1; i++) {
@@ -70,7 +75,10 @@ public:
 
 const int GROUND_LEN = 8;
 
-GroundActor::GroundActor(GameScene* scene) : Actor(scene) {
+GroundActor::GroundActor(GameScene* scene)
+    : Actor(scene)
+    , pn(time(NULL))
+{
     b2BodyDef def;
     def.type = b2_staticBody;
     def.position.Set(0.0f, 0.0f);
@@ -88,7 +96,7 @@ void GroundActor::load(int x) {
         if(!chunks[idx] || chunks[idx]->pos != pos) {
             if(!chunks[idx])
                 delete chunks[idx];
-            chunks[idx] = new GroundChunk(this->body, pos);
+            chunks[idx] = new GroundChunk(this->body, pos, &pn);
         }
     }
 }

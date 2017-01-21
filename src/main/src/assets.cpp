@@ -85,5 +85,5 @@ void loadAssets() {
     faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset("B.png"))));
     faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset("C.png"))));
     faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset("D.png"))));
-    shuffle(faces.begin(), faces.end(), std::default_random_engine());
+    shuffle(faces.begin(), faces.end(), std::default_random_engine(time(NULL)));
 }

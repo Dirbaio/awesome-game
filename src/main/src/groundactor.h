@@ -3,11 +3,13 @@
 
 #include "actor.h"
 #include "gamescene.h"
+#include "perlinnoise.h"
 
 class GroundChunk;
 class GroundActor : public Actor {
 public:
     vector<GroundChunk*> chunks;
+    PerlinNoise pn;
 
     GroundActor(GameScene* scene);
     void load(int x);
