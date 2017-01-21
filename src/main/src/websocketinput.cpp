@@ -14,6 +14,7 @@ WebSocketInput::WebSocketInput() {
 
     echo.on_message=[this](shared_ptr<WsServer::Connection> connection, shared_ptr<WsServer::Message> message) {
         auto message_str=message->string();
+		std::lock_guard<std::mutex> guard(lock);
         char player = players[(size_t)connection.get()];
         cout << "Server: Message received: \"" << message_str << "\" from player: " << player << endl;
         if (message_str == "up") {
@@ -31,8 +32,10 @@ WebSocketInput::WebSocketInput() {
         }
     };
 
-    echo.on_open=[this](shared_ptr<WsServer::Connection> connection) {
+	echo.on_open=[this](shared_ptr<WsServer::Connection> connection) {
         cout << "Server: Opened connection " << (size_t)connection.get() << endl;
+
+		std::lock_guard<std::mutex> guard(lock);
 
         char player = current_player;
         players[(size_t)connection.get()] = player;
@@ -57,6 +60,7 @@ WebSocketInput::WebSocketInput() {
     //See RFC 6455 7.4.1. for status codes
     echo.on_close=[this](shared_ptr<WsServer::Connection> connection, int status, const string& /*reason*/) {
         cout << "Server: Closed connection " << (size_t)connection.get() << " with status code " << status << endl;
+		std::lock_guard<std::mutex> guard(lock);
         char player = players[(size_t)connection.get()];
         disconnected.push_back(player);
     };
@@ -70,7 +74,6 @@ WebSocketInput::WebSocketInput() {
     server_thread = new thread([this](){
         server.start();
     });
-
 }
 
 
