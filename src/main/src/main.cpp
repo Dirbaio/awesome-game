@@ -61,6 +61,7 @@ int main() {
             delete s;
             s = next;
         }
+
         window->swapBuffers();
     }
 }

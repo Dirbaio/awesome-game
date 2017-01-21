@@ -13,6 +13,8 @@ extern ShaderProgram quadShader;
 extern ShaderProgram groundShader;
 extern std::vector<Texture2D*> faces;
 extern std::vector<std::string> facePaths;
+extern Texture2D* groundTexture;
+extern Texture2D* grassTexture;
 
 void loadAssets();
 string findAssetPath();

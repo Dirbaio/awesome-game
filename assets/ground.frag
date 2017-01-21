@@ -1,5 +1,11 @@
 //precision mediump float;
-
+varying vec2 v_dirtTexCoord;
+varying vec2 v_grassTexCoord;
+uniform sampler2D groundTexture;
+uniform sampler2D grassTexture;
 void main() {
-    gl_FragColor = vec4(0.08, 0.3, 0.0, 1.0);
+    vec4 a  = texture2D(groundTexture, v_dirtTexCoord);
+    vec4 b = texture2D(grassTexture, vec2(v_grassTexCoord.x, min(0.99, v_grassTexCoord.y)));
+
+    gl_FragColor = vec4(mix(a.xyz, b.xyz, b.w), 1.0);
 }

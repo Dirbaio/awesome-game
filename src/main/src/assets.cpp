@@ -18,6 +18,8 @@ std::vector<std::string> facePaths = {
     {"C.png"},
     {"D.png"}
 };
+Texture2D* groundTexture;
+Texture2D* grassTexture;
 
 bool isDir(const char* path) {
     struct stat info;
@@ -87,6 +89,11 @@ void loadAssets() {
     groundShader = ShaderProgram(Storage::openAsset("ground.vert"), Storage::openAsset("ground.frag"));
     quadShader = ShaderProgram(Storage::openAsset("quad.vert"), Storage::openAsset("quad.frag"));
     quadMesh = createQuad();
+    groundTexture = new Texture2D(Texture2D::load(Storage::openAsset("ground.png")));
+    grassTexture = new Texture2D(Texture2D::load(Storage::openAsset("grass.png")));
+    groundTexture->setWrap(GL_REPEAT);
+    grassTexture->setWrap(GL_REPEAT);
+
     shuffle(facePaths.begin(), facePaths.end(), std::default_random_engine(time(NULL)));
     for (const string& s : facePaths) {
         faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset(s))));

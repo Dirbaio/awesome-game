@@ -37,19 +37,19 @@ public:
             heights[i] = calcHeight(x);
         }
 
-        vector<vec2f> data;
+        vector<vec3f> data;
         for(int i = 0 ; i < CHUNK_SIZE; i++) {
-            data.push_back(vec2f((i+0)*CHUNK_RESOLUTION, heights[i]-CHUNK_DEEP));
-            data.push_back(vec2f((i+1)*CHUNK_RESOLUTION, heights[i+1]-CHUNK_DEEP));
-            data.push_back(vec2f((i+1)*CHUNK_RESOLUTION, heights[i+1]));
+            data.push_back(vec3f((i+0)*CHUNK_RESOLUTION, heights[i]-CHUNK_DEEP, 1));
+            data.push_back(vec3f((i+1)*CHUNK_RESOLUTION, heights[i+1]-CHUNK_DEEP, 1));
+            data.push_back(vec3f((i+1)*CHUNK_RESOLUTION, heights[i+1], 0));
 
-            data.push_back(vec2f((i+0)*CHUNK_RESOLUTION, heights[i]-CHUNK_DEEP));
-            data.push_back(vec2f((i+0)*CHUNK_RESOLUTION, heights[i]));
-            data.push_back(vec2f((i+1)*CHUNK_RESOLUTION, heights[i+1]));
+            data.push_back(vec3f((i+0)*CHUNK_RESOLUTION, heights[i]-CHUNK_DEEP, 1));
+            data.push_back(vec3f((i+0)*CHUNK_RESOLUTION, heights[i], 0));
+            data.push_back(vec3f((i+1)*CHUNK_RESOLUTION, heights[i+1], 0));
         }
 
         Vertex::Format format({
-                                  Vertex::Attribute("a_position", Vertex::Attribute::Float, 2)
+                                  Vertex::Attribute("a_position", Vertex::Attribute::Float, 3)
                               });
         mesh = Mesh(format);
         mesh.setVertexData(&data[0], data.size());
@@ -109,7 +109,10 @@ void GroundActor::load(int x) {
 
 void GroundActor::draw() {
     for(int i = 0; i < GROUND_LEN; i++) {
+        groundShader.uniform("m")->set(glm::translate(mat4f(1.f), vec3f(chunks[i]->pos*CHUNK_SIZE*CHUNK_RESOLUTION, 0.0f, 0.0f)));
         groundShader.uniform("mvp")->set(glm::translate(projection, vec3f(chunks[i]->pos*CHUNK_SIZE*CHUNK_RESOLUTION, 0.0f, 0.0f)));
+        groundShader.uniform("groundTexture")->set(groundTexture);
+        groundShader.uniform("grassTexture")->set(grassTexture);
         chunks[i]->mesh.draw(groundShader);
     }
 }
