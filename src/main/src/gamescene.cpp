@@ -30,10 +30,12 @@ void GameScene::update() {
     ground->load(center.x);
 
     if(Keyboard::justPressed(Keyboard::Return)){
-        vec2f pos(center.x, center.y+10.f);
-        Player* p = new Player(this, 'z', pos);
-        addActor(p);
-        players['z'] = p;
+        if (players.find('z') == players.end()) {
+            vec2f pos(center.x, center.y+10.f);
+            Player* p = new Player(this, 'z', pos);
+            addActor(p);
+            players['z'] = p;
+        }
     }
 
     for (char c : input->connectedPlayers()){
