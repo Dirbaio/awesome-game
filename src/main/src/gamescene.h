@@ -14,6 +14,8 @@ public:
     vec2f center;
     vec2f tl;
     vec2f br;
+    char winner;
+    int winScreenTimer;
 
     GameScene(WebSocketInput* input);
     void update();

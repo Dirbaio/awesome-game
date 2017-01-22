@@ -35,6 +35,16 @@ Player::Player(GameScene* _scene, char _letter, vec2f pos)
 
 void Player::update() {
     input = scene->getPlayerInput(letter);
+
+/*
+    if (scene->winner) {
+        auto v = body->GetLinearVelocity();
+        v *= 0.95f;
+        body->SetLinearVelocity(v);
+        return;
+    }
+*/
+
     if(input == WebSocketInput::DOWN)
         body->ApplyForceToCenter(b2Vec2(0, -DOWN_FORCE), true);
 

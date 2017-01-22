@@ -26,6 +26,7 @@ std::vector<std::string> facePaths = {
 Texture2D* groundTexture;
 Texture2D* grassTexture;
 Texture2D* bgTexture;
+Texture2D* winnerTexture;
 
 bool isDir(const char* path) {
     struct stat info;
@@ -83,8 +84,8 @@ void drawQuad(Texture2D& tex, vec2f pos, float radius, float roto) {
     quadShader.uniform("u_tex")->set(tex);
     mat3f lol = projection;
     lol = glm::translate(lol, pos);
-    lol = glm::scale(lol, vec2f(radius));
     lol = glm::rotate(lol, roto);
+    lol = glm::scale(lol, vec2f(tex.getSize().x/tex.getSize().y, 1.f)*radius);
     quadShader.uniform("mvp")->set(lol);
     quadMesh.draw(quadShader);
 }
@@ -101,6 +102,7 @@ void loadAssets() {
     grassTexture->setWrap(GL_REPEAT);
     bgTexture = new Texture2D(Texture2D::load(Storage::openAsset("bg.png")));
     bgTexture->setWrap(GL_REPEAT);
+    winnerTexture = new Texture2D(Texture2D::load(Storage::openAsset("winner.png")));
 
     shuffle(facePaths.begin(), facePaths.end(), std::default_random_engine(time(NULL)));
     for (const string& s : facePaths) {

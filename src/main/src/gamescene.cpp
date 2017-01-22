@@ -4,9 +4,16 @@
 #include "assets.h"
 
 const float INITIAL_HEIGHT = 25.f;
-const int TARGET_SCORE = 60*60;
+const int TARGET_SCORE = 60*20;
+const int WIN_SCREEN_DURATION = 15*60;
 
-GameScene::GameScene(WebSocketInput* i) : input(i) {
+extern Window* window;
+
+GameScene::GameScene(WebSocketInput* i)
+    : input(i)
+    , winner(0)
+    , winScreenTimer(0)
+{
     ground = new GroundActor(this);
     addActor(ground);
 
@@ -59,8 +66,9 @@ void GameScene::update() {
         nextScene = new GameScene(input);
     }
 
+    //Determine winner
     Player* first_player = nullptr;
-    if (players.size() >= 2) {
+    if (players.size() >= 2 && !winner) {
         for (auto it : players) {
             Player* p = it.second;
             if (first_player == nullptr || p->getPosition().x > first_player->getPosition().x) {
@@ -70,15 +78,21 @@ void GameScene::update() {
         first_player->score++;
 
         if (first_player->score >= TARGET_SCORE) {
-            cout << "WINNAR: " << first_player->letter << endl;
+            winner = first_player->letter;
+            winScreenTimer = 0;
         }
     }
 
+    if (winner) {
+        winScreenTimer++;
+        cout << winScreenTimer << endl;
+        if (winScreenTimer > WIN_SCREEN_DURATION) {
+            nextScene = new GameScene(input);
+        }
+    }
 
     Scene::update();
 }
-
-extern Window* window;
 
 float lolint(float f) {
     int x = int(f);
@@ -87,16 +101,19 @@ float lolint(float f) {
 }
 
 void GameScene::draw() {
-    //Camera hacks
     float aspect = float(window->getSize().x)/window->getSize().y;
+
+    //Background
     float aspect2 = aspect * bgTexture->getSize().y / bgTexture->getSize().x;
-    projection = glm::scale(mat3f(1.f), vec2f(1/aspect2, 1.f));
-
+    mat3f backgroundProjection = glm::scale(mat3f(1.f), vec2f(1/aspect2, 1.f));
     float lolscroll = center.x * 0.001f;
-    drawQuad(*bgTexture, vec2f(lolint(lolscroll/2)*2-lolscroll, 0), 1, 0);
-    drawQuad(*bgTexture, vec2f(lolint(lolscroll/2)*2 + 2 -lolscroll, 0), 1, 0);
+    quadShader.uniform("u_tex")->set(*bgTexture);
+    quadShader.uniform("mvp")->set(glm::translate(backgroundProjection, vec2f(lolint(lolscroll/2)*2-lolscroll, 0)));
+    quadMesh.draw(quadShader);
+    quadShader.uniform("mvp")->set(glm::translate(backgroundProjection, vec2f(lolint(lolscroll/2)*2 + 2 -lolscroll, 0)));
+    quadMesh.draw(quadShader);
 
-    //More camera hacks
+    //Camera hacks
     float dist = max(abs(br.x-tl.x),abs(br.y-tl.y));
     dist /=2.2;
     dist = max(dist , 14.f);
@@ -104,9 +121,20 @@ void GameScene::draw() {
     projection = glm::translate(projection, -center);
 
     Scene::draw();
+
+    if (winner) {
+        projection = glm::scale(mat3f(1.f), vec2f(1/(aspect*14.f), 1/14.f));
+        Texture2D* face = faces[faceIndex(winner)];
+        drawQuad(*face, vec2f(0.f,-4.5f), fmin(winScreenTimer/2.f, 8.f), -(float)winScreenTimer/50.f);
+        drawQuad(*winnerTexture, vec2f(0.f,6.f), fmin(winScreenTimer/20.f, 1.5f), sin(winScreenTimer/15.f)/6.f);
+    }
+
 }
 
 WebSocketInput::PlayerState GameScene::getPlayerInput(char letter) {
+    /*if (winner) {
+        return WebSocketInput::NOTHING; //Ignore inputs
+    }*/
     if(letter == 'z') {
         if(Keyboard::pressed(Keyboard::Down))
             return WebSocketInput::DOWN;
