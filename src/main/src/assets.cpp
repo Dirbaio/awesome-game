@@ -30,6 +30,8 @@ Texture2D* grassTexture;
 Texture2D* bgTexture;
 Texture2D* winnerTexture;
 Texture2D* particlesTexture;
+Texture2D* titleTexture;
+Texture2D* awesomeTexture;
 
 bool isDir(const char* path) {
     struct stat info;
@@ -83,14 +85,18 @@ MeshIndexed createQuad() {
     return quad;
 }
 
-void drawQuad(Texture2D& tex, vec2f pos, float radius, float roto) {
+void drawQuad(Texture2D& tex, vec2f pos, vec2f scale, float roto) {
     quadShader.uniform("u_tex")->set(tex);
     mat3f lol = projection;
     lol = glm::translate(lol, pos);
     lol = glm::rotate(lol, roto);
-    lol = glm::scale(lol, vec2f(tex.getSize().x/tex.getSize().y, 1.f)*radius);
+    lol = glm::scale(lol, vec2f(scale.x*tex.getSize().x/tex.getSize().y, scale.y));
     quadShader.uniform("mvp")->set(lol);
     quadMesh.draw(quadShader);
+}
+
+void drawQuad(Texture2D& tex, vec2f pos, float radius, float roto) {
+    drawQuad(tex, pos, vec2f(radius, radius), roto);
 }
 
 void drawRect(vec4f color, vec2f topleft, vec2f bottomright) {
@@ -120,11 +126,14 @@ void loadAssets() {
     bgTexture->setWrap(GL_REPEAT);
     winnerTexture = new Texture2D(Texture2D::load(Storage::openAsset("winner.png")));
     particlesTexture = new Texture2D(Texture2D::load(Storage::openAsset("particles.png")));
+    titleTexture = new Texture2D(Texture2D::load(Storage::openAsset("title.png")));
 
     shuffle(facePaths.begin(), facePaths.end(), std::default_random_engine(time(NULL)));
     for (const string& s : facePaths) {
         faces.push_back(new Texture2D(Texture2D::load(Storage::openAsset(s))));
     }
+
+    awesomeTexture = new Texture2D(Texture2D::load(Storage::openAsset("I.png")));
 }
 
 int faceIndex(char c) {

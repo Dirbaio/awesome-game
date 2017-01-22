@@ -138,7 +138,15 @@ void GameScene::draw() {
     Scene::draw();
 
     //GUI
-    if (winner) {
+    if (players.empty()) {
+        projection = glm::scale(mat3f(1.f), vec2f(1/(aspect*14.f), 1/14.f));
+        float rot = sin(winScreenTimer/30.f)/6.f;
+        float zoom = 4.f*(1.f+sin(winScreenTimer/15.f)/10.f);
+        drawQuad(*titleTexture, vec2f(0.f,2.f), zoom, rot);
+        float aweScale = 1.f - 0.2*fabs(cos(winScreenTimer/15.f));
+        //projection = glm::scale(projection, vec2f(1.f,aweScale));
+        drawQuad(*awesomeTexture, vec2f(28.f - (winScreenTimer/18.f),-12.5f + fabs(sin(winScreenTimer/15.f)*2.f)), vec2f(3.f,3.f*aweScale), 0.f);
+    } else if (winner) {
         projection = glm::scale(mat3f(1.f), vec2f(1/(aspect*14.f), 1/14.f));
         Texture2D* face = faces[faceIndex(winner)];
         drawQuad(*face, vec2f(0.f,-4.5f), fmin(winScreenTimer/2.f, 8.f), -(float)winScreenTimer/50.f);

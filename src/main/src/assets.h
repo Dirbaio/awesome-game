@@ -20,10 +20,13 @@ extern Texture2D* groundTexture;
 extern Texture2D* grassTexture;
 extern Texture2D* bgTexture;
 extern Texture2D* winnerTexture;
+extern Texture2D* titleTexture;
 extern Texture2D* particlesTexture;
+extern Texture2D* awesomeTexture;
 
 void loadAssets();
 string findAssetPath();
+void drawQuad(Texture2D& tex, vec2f pos, vec2f scale, float roto);
 void drawQuad(Texture2D& tex, vec2f pos, float radius, float roto);
 void drawRect(vec4f color, vec2f topleft, vec2f bottomright);
 

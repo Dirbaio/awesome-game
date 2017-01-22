@@ -15,9 +15,9 @@ public:
     void update();
     void draw();
 
+    int jumping;
     int notinground;
     int inground;
-    int jumping;
     b2Vec2 normal;
     vec2f oldPos;
 };
