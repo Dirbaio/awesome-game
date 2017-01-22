@@ -7,6 +7,7 @@
 #include "gamescene.h"
 #include "webserver.h"
 #include "websocketinput.h"
+#include "emyl.h"
 
 using namespace std;
 Window* window;
@@ -28,6 +29,10 @@ int main() {
     window = new Window(Window::DisplayMode::createWindowedMode(800, 600), settings);
 
     loadAssets();
+
+    Emyl::Music music;
+    music.openFromFile(assetPath+"DJ_Paternoster_-_03_-_Emotion.ogg");
+    music.play();
 
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);

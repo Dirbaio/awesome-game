@@ -4,7 +4,8 @@ TARGET = main
 CONFIG -= app_bundle
 CONFIG -= embed_manifest_exe
 
-LIBS += -lboost_system -lboost_coroutine -lboost_context -lboost_thread -lcrypto
+LIBS += -lboost_system -lboost_coroutine -lboost_context -lboost_thread -lcrypto -lopenal -logg -lvorbisfile -lvorbis
+
 
 TEMPLATE = app
 
@@ -22,7 +23,8 @@ SOURCES += \
     src/webserver.cpp \
     src/websocketinput.cpp \
     src/perlinnoise.cpp \
-    src/particlesystem.cpp
+    src/particlesystem.cpp \
+    src/emyl.cpp \
 
 OTHER_FILES += \
     ../../assets/awesomeface.png \
@@ -58,4 +60,5 @@ HEADERS += \
     src/websocketinput.h \
     src/webserver.h \
     src/perlinnoise.h \
-    src/particlesystem.h
+    src/particlesystem.h \
+    src/emyl.h \
