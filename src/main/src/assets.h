@@ -15,6 +15,7 @@ extern std::vector<Texture2D*> faces;
 extern std::vector<std::string> facePaths;
 extern Texture2D* groundTexture;
 extern Texture2D* grassTexture;
+extern Texture2D* bgTexture;
 
 void loadAssets();
 string findAssetPath();

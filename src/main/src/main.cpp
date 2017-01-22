@@ -50,7 +50,7 @@ int main() {
         // Set viewport
         glViewport(0, 0, window->getSize().x, window->getSize().y);
 
-        glClearColor(0.7f, 0.9f, 1.0f, 1.0f);
+        glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Draw ALL the things!!!!

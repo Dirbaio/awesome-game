@@ -39,7 +39,8 @@ DISTFILES += \
     ../../assets/quad.frag \
     ../../assets/quad.vert \
     ../../assets/ground.png \
-    ../../assets/grass.png
+    ../../assets/grass.png \
+    ../../assets/bg.png
 
 HEADERS += \
     src/actor.h \

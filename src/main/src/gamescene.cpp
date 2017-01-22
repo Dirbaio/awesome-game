@@ -63,10 +63,23 @@ void GameScene::update() {
 
 extern Window* window;
 
-void GameScene::draw() {
+float lolint(float f) {
+    int x = int(f);
+    if(f < 0 && f != x) x--;
+    return x;
+}
 
+void GameScene::draw() {
     //Camera hacks
     float aspect = float(window->getSize().x)/window->getSize().y;
+    float aspect2 = aspect * bgTexture->getSize().y / bgTexture->getSize().x;
+    projection = glm::ortho(-aspect2, aspect2, -1.f, 1.f);
+
+    float lolscroll = center.x * 0.007f;
+    drawQuad(*bgTexture, vec2f(lolint(lolscroll/2)*2-lolscroll, 0), 1, 0);
+    drawQuad(*bgTexture, vec2f(lolint(lolscroll/2)*2 + 2 -lolscroll, 0), 1, 0);
+
+    //More camera hacks
     float dist = max(abs(br.x-tl.x),abs(br.y-tl.y));
     dist /=2.2;
     dist = max(dist , 14.f);
