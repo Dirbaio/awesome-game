@@ -8,6 +8,7 @@ class Player : public Actor {
 public:
     GameScene* scene;
     char letter;
+    int score;
 
     Player(GameScene* scene, char letter, vec2f pos);
     void update();

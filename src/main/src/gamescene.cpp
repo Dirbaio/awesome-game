@@ -4,6 +4,7 @@
 #include "assets.h"
 
 const float INITIAL_HEIGHT = 25.f;
+const int TARGET_SCORE = 60*60;
 
 GameScene::GameScene(WebSocketInput* i) : input(i) {
     ground = new GroundActor(this);
@@ -57,6 +58,22 @@ void GameScene::update() {
     if(Keyboard::justPressed(Keyboard::R)){
         nextScene = new GameScene(input);
     }
+
+    Player* first_player = nullptr;
+    if (players.size() >= 2) {
+        for (auto it : players) {
+            Player* p = it.second;
+            if (first_player == nullptr || p->getPosition().x > first_player->getPosition().x) {
+                first_player = p;
+            }
+        }
+        first_player->score++;
+
+        if (first_player->score >= TARGET_SCORE) {
+            cout << "WINNAR: " << first_player->letter << endl;
+        }
+    }
+
 
     Scene::update();
 }

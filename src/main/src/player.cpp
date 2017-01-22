@@ -12,6 +12,7 @@ Player::Player(GameScene* _scene, char _letter, vec2f pos)
     , letter(_letter)
     , jumping(0)
     , notinground(0)
+    , score(0)
 {
 
     b2CircleShape circle;
