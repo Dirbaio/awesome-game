@@ -86,11 +86,11 @@ var event_up = touch? 'touchend' : 'mouseup';
 bdown = document.getElementById("down");
 bup = document.getElementById("up");
 
-bup.addEventListener( event_down, function(event) {ws.send("up");} )
+bup.addEventListener( event_down, function(event) { ws.send("up"); window.navigator.vibrate(80);} )
 bup.addEventListener( event_up, function(event) {ws.send("nup");} )
 
-bdown.addEventListener( event_down, function(event) {ws.send("down")} )
-bdown.addEventListener( event_up, function(event) {ws.send("ndown")} )
+bdown.addEventListener( event_down, function(event) { ws.send("down"); window.navigator.vibrate(80); } )
+bdown.addEventListener( event_up, function(event) {ws.send("ndown");} )
 
 window.onclose=function(){
   ws.close();
