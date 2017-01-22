@@ -26,7 +26,7 @@ Player::Player(GameScene* _scene, char _letter, vec2f pos)
     fixtureDef.shape = &circle;
     fixtureDef.density = 3;
     body->CreateFixture(&fixtureDef);
-
+    body->SetAngularVelocity(-60.f);
     this->setBody(body);
 }
 
@@ -68,7 +68,7 @@ void Player::update() {
 
     float distance = getPositionVec3().x-scene->br.x;
 
-    float communism = 50.f;
+    float communism = 35.f;
     communism += fabs(distance*10.f);
     body->ApplyForceToCenter(b2Vec2(communism,0.f), true);
 
