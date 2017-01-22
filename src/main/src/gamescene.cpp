@@ -112,7 +112,6 @@ WebSocketInput::PlayerState GameScene::getPlayerInput(char letter) {
             return WebSocketInput::DOWN;
         if(Keyboard::pressed(Keyboard::UP))
             return WebSocketInput::UP;
-        return WebSocketInput::NOTHING;
     }
     return input->getPlayerState(letter);
 }
