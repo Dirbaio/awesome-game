@@ -76,5 +76,5 @@ void Player::update() {
 
 void Player::draw() {
     Texture2D* face = faces[faceIndex(letter)];
-    drawQuad(*face, getPosition(), 1.3f, getAngle()/4);
+    drawQuad(*face, getPosition(), 1.6f, getAngle()/8);
 }

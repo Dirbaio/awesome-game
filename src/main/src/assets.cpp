@@ -12,11 +12,16 @@ ShaderProgram quadShader;
 ShaderProgram groundShader;
 std::vector<Texture2D*> faces;
 std::vector<std::string> facePaths = {
-    {"awesomeface.png"},
     {"A.png"},
     {"B.png"},
     {"C.png"},
-    {"D.png"}
+    {"D.png"},
+    {"E.png"},
+    {"F.png"},
+    {"G.png"},
+    {"H.png"},
+    {"I.png"},
+    {"J.png"}
 };
 Texture2D* groundTexture;
 Texture2D* grassTexture;
