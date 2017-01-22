@@ -12,12 +12,14 @@ extern mat3f projection;
 extern MeshIndexed quadMesh;
 extern ShaderProgram quadShader;
 extern ShaderProgram groundShader;
+extern ShaderProgram particleShader;
 extern std::vector<Texture2D*> faces;
 extern std::vector<std::string> facePaths;
 extern Texture2D* groundTexture;
 extern Texture2D* grassTexture;
 extern Texture2D* bgTexture;
 extern Texture2D* winnerTexture;
+extern Texture2D* particlesTexture;
 
 void loadAssets();
 string findAssetPath();

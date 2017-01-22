@@ -22,6 +22,7 @@ SOURCES += \
     src/webserver.cpp \
     src/websocketinput.cpp \
     src/perlinnoise.cpp \
+    src/particlesystem.cpp
 
 OTHER_FILES += \
     ../../assets/awesomeface.png \
@@ -40,7 +41,10 @@ DISTFILES += \
     ../../assets/quad.vert \
     ../../assets/ground.png \
     ../../assets/grass.png \
-    ../../assets/bg.png
+    ../../assets/bg.png \
+    ../../assets/particle.frag \
+    ../../assets/particle.geom \
+    ../../assets/particle.vert
 
 HEADERS += \
     src/actor.h \
@@ -52,3 +56,4 @@ HEADERS += \
     src/websocketinput.h \
     src/webserver.h \
     src/perlinnoise.h \
+    src/particlesystem.h

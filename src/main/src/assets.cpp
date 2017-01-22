@@ -10,6 +10,7 @@ mat3f projection;
 MeshIndexed quadMesh;
 ShaderProgram quadShader;
 ShaderProgram groundShader;
+ShaderProgram particleShader;
 std::vector<Texture2D*> faces;
 std::vector<std::string> facePaths = {
     {"A.png"},
@@ -27,6 +28,7 @@ Texture2D* groundTexture;
 Texture2D* grassTexture;
 Texture2D* bgTexture;
 Texture2D* winnerTexture;
+Texture2D* particlesTexture;
 
 bool isDir(const char* path) {
     struct stat info;
@@ -95,6 +97,7 @@ void loadAssets() {
 
     groundShader = ShaderProgram(Storage::openAsset("ground.vert"), Storage::openAsset("ground.frag"));
     quadShader = ShaderProgram(Storage::openAsset("quad.vert"), Storage::openAsset("quad.frag"));
+    particleShader = ShaderProgram(Storage::openAsset("particle.vert"), Storage::openAsset("particle.geom"), Storage::openAsset("particle.frag"));
     quadMesh = createQuad();
     groundTexture = new Texture2D(Texture2D::load(Storage::openAsset("ground.png")));
     groundTexture->setWrap(GL_REPEAT);
@@ -103,6 +106,7 @@ void loadAssets() {
     bgTexture = new Texture2D(Texture2D::load(Storage::openAsset("bg.png")));
     bgTexture->setWrap(GL_REPEAT);
     winnerTexture = new Texture2D(Texture2D::load(Storage::openAsset("winner.png")));
+    particlesTexture = new Texture2D(Texture2D::load(Storage::openAsset("particles.png")));
 
     shuffle(facePaths.begin(), facePaths.end(), std::default_random_engine(time(NULL)));
     for (const string& s : facePaths) {

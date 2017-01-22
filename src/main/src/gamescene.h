@@ -3,6 +3,7 @@
 #include "websocketinput.h"
 #include <VBE/VBE.hpp>
 #include "scene.h"
+#include "particlesystem.h"
 
 class Player;
 class GroundActor;
@@ -11,6 +12,7 @@ public:
     GroundActor* ground;
     map<char, Player*> players;
     WebSocketInput* input;
+    ParticleSystem* particles;
     vec2f center;
     vec2f tl;
     vec2f br;

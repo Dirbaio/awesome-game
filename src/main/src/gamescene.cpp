@@ -16,6 +16,8 @@ GameScene::GameScene(WebSocketInput* i)
 {
     ground = new GroundActor(this);
     addActor(ground);
+    particles = new ParticleSystem(this);
+    addActor(particles);
 
     int x = 0;
     for (char c :  input->getPlayers()){
@@ -92,6 +94,32 @@ void GameScene::update() {
     }
 
     Scene::update();
+
+    for (auto it : players) {
+        static vec4f cols[] = {
+            vec4f(1, 0, 0, 1),
+            vec4f(1, 1, 0, 1),
+            vec4f(0, 1, 0, 1),
+            vec4f(0, 1, 1, 1),
+            vec4f(0, 0, 1, 1),
+        };
+        static vec2f oldPos;
+        vec2f pos = it.second->getPosition();
+        for(float j = 0; j < 1; j+=0.1) {
+            for(int i = 0; i < 5; i++) {
+                Particle p;
+                p.startCol = p.endCol = cols[i];
+                p.endCol.a = 0;
+                p.startSize = 0.3;
+                p.endSize = 0;
+                p.life = 1;
+                p.p = pos * j + oldPos * (1-j);
+                p.p.y += (i-2) * 0.3;
+                particles->addParticle(p);
+            }
+        }
+        oldPos = pos;
+    }
 }
 
 float lolint(float f) {
