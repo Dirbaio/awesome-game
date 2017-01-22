@@ -11,9 +11,9 @@ public:
     GroundActor* ground;
     map<char, Player*> players;
     WebSocketInput* input;
-    vec3f center;
-    vec3f tl;
-    vec3f br;
+    vec2f center;
+    vec2f tl;
+    vec2f br;
 
     GameScene(WebSocketInput* input);
     void update();

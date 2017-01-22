@@ -6,7 +6,7 @@
 #include <random>       // std::default_random_engine
 using namespace std;
 
-mat4f projection;
+mat3f projection;
 MeshIndexed quadMesh;
 ShaderProgram quadShader;
 ShaderProgram groundShader;
@@ -81,10 +81,10 @@ MeshIndexed createQuad() {
 
 void drawQuad(Texture2D& tex, vec2f pos, float radius, float roto) {
     quadShader.uniform("u_tex")->set(tex);
-    mat4f lol = projection;
-    lol = glm::translate(lol, vec3f(pos.x, pos.y, 0));
-    lol = glm::scale(lol, vec3f(radius, radius, radius));
-    lol = glm::rotate(lol, roto, vec3f(0, 0, 1));
+    mat3f lol = projection;
+    lol = glm::translate(lol, pos);
+    lol = glm::scale(lol, vec2f(radius));
+    lol = glm::rotate(lol, roto);
     quadShader.uniform("mvp")->set(lol);
     quadMesh.draw(quadShader);
 }

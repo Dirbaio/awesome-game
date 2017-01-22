@@ -10,9 +10,11 @@ Player::Player(GameScene* _scene, char _letter, vec2f pos)
     : Actor(_scene)
     , scene(_scene)
     , letter(_letter)
-    , jumping(0)
+    , jumping(100)
     , notinground(0)
     , score(0)
+    , inground(0)
+    , normal(0,1)
 {
 
     b2CircleShape circle;
@@ -32,7 +34,7 @@ Player::Player(GameScene* _scene, char _letter, vec2f pos)
 }
 
 void Player::update() {
-    WebSocketInput::PlayerState input = scene->getPlayerInput(letter);
+    input = scene->getPlayerInput(letter);
     if(input == WebSocketInput::DOWN)
         body->ApplyForceToCenter(b2Vec2(0, -DOWN_FORCE), true);
 
@@ -52,18 +54,22 @@ void Player::update() {
         }
         e = e->next;
     }
+
+    notinground++;
+    inground++;
     if(ct != 0) {
         notinground = 0;
         normal = (1.0f / ct) * lol;
+        normal.Normalize();
     } else {
-        notinground++;
+        inground = notinground > 5 ? 0 : 100;
     }
 
-    if (jumping > 0)  jumping--;
-    if(input == WebSocketInput::UP && jumping <= 0) {
+    jumping++;
+    if(input == WebSocketInput::UP && jumping > 20) {
         if(notinground < 6) {
             body->SetLinearVelocity(body->GetLinearVelocity() + UP_FORCE * normal);
-            jumping = 20;
+            jumping = 0;
         }
     }
 
@@ -72,10 +78,38 @@ void Player::update() {
     float communism = 35.f;
     communism += fabs(distance*10.f);
     body->ApplyForceToCenter(b2Vec2(communism,0.f), true);
-
 }
 
 void Player::draw() {
     Texture2D* face = faces[faceIndex(letter)];
-    drawQuad(*face, getPosition(), 1.6f, getAngle()/8);
+    vec2f pos = getPosition();
+
+    vec2f squashDir(normal.x, normal.y);
+    float squash = 1.f;
+    squash += sin(jumping*0.4)*exp(-jumping*0.07) * 0.4f;
+    squash += sin(inground*0.5)*exp(-inground*0.12) * 0.2f;
+    if(input == WebSocketInput::DOWN)
+        squash -= 0.16;
+
+    glm::rotate(mat3f(1.0f), 1.0f);
+    quadShader.uniform("u_tex")->set(face);
+    mat3f lol = projection;
+    lol = glm::translate(lol, pos);
+    lol = glm::scale(lol, vec2f(1.6f, 1.6f));
+    lol *= mat3f(
+                squashDir.x, squashDir.y, 0,
+                -squashDir.y, squashDir.x, 0,
+                0, 0, 1
+    );
+    lol = glm::translate(lol, vec2f(-1.f+squash, 0.f));
+    lol = glm::scale(lol, vec2f(squash, 1/squash));
+    lol *= mat3f(
+                squashDir.x, -squashDir.y, 0,
+                squashDir.y, squashDir.x, 0,
+                0, 0, 1
+    );
+    lol = glm::rotate(lol, getAngle()/6);
+    quadShader.uniform("mvp")->set(lol);
+    quadMesh.draw(quadShader);
+
 }

@@ -9,12 +9,14 @@ public:
     GameScene* scene;
     char letter;
     int score;
+    WebSocketInput::PlayerState input;
 
     Player(GameScene* scene, char letter, vec2f pos);
     void update();
     void draw();
 
     int notinground;
+    int inground;
     int jumping;
     b2Vec2 normal;
 };

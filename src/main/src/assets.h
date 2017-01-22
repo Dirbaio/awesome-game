@@ -7,7 +7,7 @@
 
 using namespace std;
 
-extern mat4f projection;
+extern mat3f projection;
 extern MeshIndexed quadMesh;
 extern ShaderProgram quadShader;
 extern ShaderProgram groundShader;

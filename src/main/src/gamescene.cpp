@@ -21,8 +21,8 @@ GameScene::GameScene(WebSocketInput* i) : input(i) {
 }
 
 void GameScene::update() {
-    tl=vec3f(999999999.f,999999999.f,0.f);
-    br=vec3f(-999999999.f,-999999999.f,0.f);
+    tl=vec2f(999999999.f,999999999.f);
+    br=vec2f(-999999999.f,-999999999.f);
     for (auto p : players) {
         auto pos = p.second->getPosition();
         tl.x = min(tl.x, pos.x);
@@ -90,9 +90,9 @@ void GameScene::draw() {
     //Camera hacks
     float aspect = float(window->getSize().x)/window->getSize().y;
     float aspect2 = aspect * bgTexture->getSize().y / bgTexture->getSize().x;
-    projection = glm::ortho(-aspect2, aspect2, -1.f, 1.f);
+    projection = glm::scale(mat3f(1.f), vec2f(1/aspect2, 1.f));
 
-    float lolscroll = center.x * 0.007f;
+    float lolscroll = center.x * 0.001f;
     drawQuad(*bgTexture, vec2f(lolint(lolscroll/2)*2-lolscroll, 0), 1, 0);
     drawQuad(*bgTexture, vec2f(lolint(lolscroll/2)*2 + 2 -lolscroll, 0), 1, 0);
 
@@ -100,7 +100,7 @@ void GameScene::draw() {
     float dist = max(abs(br.x-tl.x),abs(br.y-tl.y));
     dist /=2.2;
     dist = max(dist , 14.f);
-    projection = glm::ortho(-dist*aspect, dist*aspect, -dist, dist);
+    projection = glm::scale(mat3f(1.f), vec2f(1/(aspect*dist), 1/dist));
     projection = glm::translate(projection, -center);
 
     Scene::draw();

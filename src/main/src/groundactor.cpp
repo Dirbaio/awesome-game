@@ -109,8 +109,8 @@ void GroundActor::load(int x) {
 
 void GroundActor::draw() {
     for(int i = 0; i < GROUND_LEN; i++) {
-        groundShader.uniform("m")->set(glm::translate(mat4f(1.f), vec3f(chunks[i]->pos*CHUNK_SIZE*CHUNK_RESOLUTION, 0.0f, 0.0f)));
-        groundShader.uniform("mvp")->set(glm::translate(projection, vec3f(chunks[i]->pos*CHUNK_SIZE*CHUNK_RESOLUTION, 0.0f, 0.0f)));
+        groundShader.uniform("m")->set(glm::translate(mat3f(1.f), vec2f(chunks[i]->pos*CHUNK_SIZE*CHUNK_RESOLUTION, 0.0f)));
+        groundShader.uniform("mvp")->set(glm::translate(projection, vec2f(chunks[i]->pos*CHUNK_SIZE*CHUNK_RESOLUTION, 0.0f)));
         groundShader.uniform("groundTexture")->set(groundTexture);
         groundShader.uniform("grassTexture")->set(grassTexture);
         chunks[i]->mesh.draw(groundShader);
