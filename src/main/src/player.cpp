@@ -33,6 +33,21 @@ Player::Player(GameScene* _scene, char _letter, vec2f pos)
     this->setBody(body);
 }
 
+float frand(float f) {
+    return ((float(rand()) / float(RAND_MAX)) * 2 - 1) * f;
+}
+
+float frandp(float f) {
+    return (float(rand()) / float(RAND_MAX)) * f;
+}
+
+vec2f frandv(float f) {
+    return vec2f(frand(f), frand(f));
+}
+vec2f frandv(float x, float y) {
+    return vec2f(frand(x), frand(y));
+}
+
 void Player::update() {
     input = scene->getPlayerInput(letter);
 
@@ -45,8 +60,6 @@ void Player::update() {
     }
 */
 
-    if(input == WebSocketInput::DOWN)
-        body->ApplyForceToCenter(b2Vec2(0, -DOWN_FORCE), true);
 
     b2ContactEdge* e = body->GetContactList();
     int ct = 0;
@@ -75,11 +88,44 @@ void Player::update() {
         inground = notinground > 5 ? 0 : 100;
     }
 
+    vec2f n = vec2f(normal.x, normal.y);
+    vec2f n2 = vec2f(-normal.y, normal.x);
+
     jumping++;
-    if(input == WebSocketInput::UP && jumping > 20) {
-        if(notinground < 6) {
-            body->SetLinearVelocity(body->GetLinearVelocity() + UP_FORCE * normal);
-            jumping = 0;
+    if(input == WebSocketInput::UP && jumping > 20 && notinground < 6) {
+        body->SetLinearVelocity(body->GetLinearVelocity() + UP_FORCE * normal);
+        jumping = 0;
+
+        for(int i = 0; i < 5; i++) {
+            Particle p;
+            p.startCol = p.endCol = vec4f(1, 1, 1, 1);
+            p.endCol.a = 0;
+            p.startSize = 0.4;
+            p.endSize = 0.2;
+            p.life = 0.5;
+            p.texIndex = 1;
+            p.v = n * frand(1) + n2 * frand(8);
+            p.p = getPosition() - n + frandv(0.3);
+            scene->particles->addParticle(p);
+        }
+    }
+
+    if(input == WebSocketInput::DOWN) {
+        body->ApplyForceToCenter(b2Vec2(0, -DOWN_FORCE), true);
+        if(notinground < 4) {
+            for(int i = 0; i < 5; i++) {
+                Particle p;
+                p.startCol = p.endCol = vec4f(1,1,1, 1);
+                p.endCol.a = 0;
+                p.startSize = 0.3;
+                p.endSize = 0.1;
+                p.life = 0.4;
+                p.texIndex = 1;
+                float direction = n.x > 0 ? 1 : -1;
+                p.v = n * frand(1) + direction * n2 * (5+frandp(7));
+                p.p = getPosition() - n + frandv(0.1) + n2*frand(0.6);
+                scene->particles->addParticle(p);
+            }
         }
     }
 
@@ -98,17 +144,19 @@ void Player::update() {
     };
 
     vec2f pos = getPosition();
-    for(float j = 0; j < 1; j+=0.1) {
-        for(int i = 0; i < 5; i++) {
-            Particle p;
-            p.startCol = p.endCol = cols[i];
-            p.endCol.a = 0;
-            p.startSize = 0.3;
-            p.endSize = 0;
-            p.life = 1;
-            p.p = pos * j + oldPos * (1-j);
-            p.p.y += (i-2) * 0.3;
-            scene->particles->addParticle(p);
+    if(scene->winner == letter) {
+        for(float j = 0; j < 1; j+=0.1) {
+            for(int i = 0; i < 5; i++) {
+                Particle p;
+                p.startCol = p.endCol = cols[i];
+                p.endCol.a = 0;
+                p.startSize = 0.3;
+                p.endSize = 0;
+                p.life = 1;
+                p.p = pos * j + oldPos * (1-j);
+                p.p.y += (i-2) * 0.3;
+                scene->particles->addParticle(p);
+            }
         }
     }
     oldPos = pos;

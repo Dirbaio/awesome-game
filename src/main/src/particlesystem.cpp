@@ -51,7 +51,7 @@ void ParticleSystem::update() {
     }
 }
 
-const int PARTICLE_TEX_COUNT = 1;
+const int PARTICLE_TEX_COUNT = 4;
 
 void ParticleSystem::draw() {
     if(particles.size() == 0)
