@@ -4,8 +4,8 @@
 #include "assets.h"
 
 const float INITIAL_HEIGHT = 25.f;
-const int TARGET_SCORE = 60*20;
-const int WIN_SCREEN_DURATION = 15*60;
+const int TARGET_SCORE = 60*30;
+const int WIN_SCREEN_DURATION = 10*60;
 
 extern Window* window;
 
@@ -85,9 +85,8 @@ void GameScene::update() {
         }
     }
 
+    winScreenTimer++;
     if (winner) {
-        winScreenTimer++;
-        cout << winScreenTimer << endl;
         if (winScreenTimer > WIN_SCREEN_DURATION) {
             nextScene = new GameScene(input);
         }
@@ -124,11 +123,35 @@ void GameScene::draw() {
 
     Scene::draw();
 
+    //GUI
     if (winner) {
         projection = glm::scale(mat3f(1.f), vec2f(1/(aspect*14.f), 1/14.f));
         Texture2D* face = faces[faceIndex(winner)];
         drawQuad(*face, vec2f(0.f,-4.5f), fmin(winScreenTimer/2.f, 8.f), -(float)winScreenTimer/50.f);
         drawQuad(*winnerTexture, vec2f(0.f,6.f), fmin(winScreenTimer/20.f, 1.5f), sin(winScreenTimer/15.f)/6.f);
+    } else {
+        float y = 0;
+        for (auto it : players) {
+            Player *p = it.second;
+            float progress = p->score/(float)TARGET_SCORE;
+            Texture2D* face = faces[faceIndex(p->letter)];
+
+            projection = glm::translate(mat3f(1.f), vec2f(-1,1));
+            projection = glm::scale(projection, vec2f(1/(aspect), 1));
+
+            drawQuad(*face, vec2f(0.2f,-0.2f - y), 0.1f, -(float)winScreenTimer/40.f);
+
+            vec2f begin(0.35f, -0.16f - y);
+            vec2f endDone(0.35f + (0.5f*progress), -0.24f - y);
+            vec2f endTotal(0.35f + (0.5f), -0.24f - y);
+            vec4f colorDone(0.2f,0.9f,0.2f,1.f);
+            vec4f colorTotal(0.9f,0.9f,0.9f,1.f);
+            drawRect(colorTotal, begin, endTotal);
+            drawRect(colorDone, begin, endDone);
+
+            y += 0.2;
+        }
+
     }
 
 }

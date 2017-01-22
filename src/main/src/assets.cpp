@@ -9,6 +9,7 @@ using namespace std;
 mat3f projection;
 MeshIndexed quadMesh;
 ShaderProgram quadShader;
+ShaderProgram rectShader;
 ShaderProgram groundShader;
 ShaderProgram particleShader;
 std::vector<Texture2D*> faces;
@@ -92,12 +93,24 @@ void drawQuad(Texture2D& tex, vec2f pos, float radius, float roto) {
     quadMesh.draw(quadShader);
 }
 
+void drawRect(vec4f color, vec2f topleft, vec2f bottomright) {
+    rectShader.uniform("u_color")->set(color);
+    mat3f lol = projection;
+    vec2f size = bottomright-topleft;
+    lol = glm::translate(lol, topleft);
+    lol = glm::translate(lol, size/2.f);
+    lol = glm::scale(lol, size/2.f);
+    rectShader.uniform("mvp")->set(lol);
+    quadMesh.draw(rectShader);
+}
+
 void loadAssets() {
     Storage::setAssetPath(findAssetPath());
 
     groundShader = ShaderProgram(Storage::openAsset("ground.vert"), Storage::openAsset("ground.frag"));
     quadShader = ShaderProgram(Storage::openAsset("quad.vert"), Storage::openAsset("quad.frag"));
     particleShader = ShaderProgram(Storage::openAsset("particle.vert"), Storage::openAsset("particle.geom"), Storage::openAsset("particle.frag"));
+    rectShader = ShaderProgram(Storage::openAsset("rect.vert"), Storage::openAsset("rect.frag"));
     quadMesh = createQuad();
     groundTexture = new Texture2D(Texture2D::load(Storage::openAsset("ground.png")));
     groundTexture->setWrap(GL_REPEAT);

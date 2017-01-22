@@ -11,6 +11,7 @@ using namespace std;
 extern mat3f projection;
 extern MeshIndexed quadMesh;
 extern ShaderProgram quadShader;
+extern ShaderProgram rectShader;
 extern ShaderProgram groundShader;
 extern ShaderProgram particleShader;
 extern std::vector<Texture2D*> faces;
@@ -24,6 +25,9 @@ extern Texture2D* particlesTexture;
 void loadAssets();
 string findAssetPath();
 void drawQuad(Texture2D& tex, vec2f pos, float radius, float roto);
+void drawRect(vec4f color, vec2f topleft, vec2f bottomright);
+
+
 int faceIndex(char c);
 
 #endif // RESOURCES_H

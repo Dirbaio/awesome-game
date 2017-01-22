@@ -44,7 +44,9 @@ DISTFILES += \
     ../../assets/bg.png \
     ../../assets/particle.frag \
     ../../assets/particle.geom \
-    ../../assets/particle.vert
+    ../../assets/particle.vert \
+    ../../assets/rect.frag \
+    ../../assets/rect.vert \
 
 HEADERS += \
     src/actor.h \
