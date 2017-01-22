@@ -3,8 +3,32 @@
 
 using namespace std;
 
+char WebSocketInput::findUnusedPlayerId() {
+    std::lock_guard<std::mutex> guard(lock);
+    vector<char> unused;
+    for (char c = 'A'; c < 'A'+maxPlayers; c++) {
 
-WebSocketInput::WebSocketInput() {
+        bool found = false;
+        for (auto p : players) {
+            if (p.second == c) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            unused.push_back(c);
+        }
+    }
+    if (unused.empty()) return 0;
+
+    int randIndex = rand() % unused.size();
+    return unused[randIndex];
+}
+
+
+WebSocketInput::WebSocketInput(int _maxPlayers)
+    : maxPlayers(_maxPlayers)
+{
     server.config.port=8080;
 
     //  Test with the following JavaScript:
@@ -14,9 +38,15 @@ WebSocketInput::WebSocketInput() {
     auto& echo=server.endpoint["^/?$"];
 
     echo.on_message=[this](shared_ptr<WsServer::Connection> connection, shared_ptr<WsServer::Message> message) {
-        auto message_str=message->string();
+
         std::lock_guard<std::mutex> guard(lock);
-        char player = players[(size_t)connection.get()];
+
+        auto it = players.find((size_t)connection.get());
+        if (it == players.end()) return;
+
+        char player = it->second;
+
+        auto message_str=message->string();
         cout << "Server: Message received: \"" << message_str << "\" from player: " << player << endl;
         if (message_str == "up") {
             playerState[player] = PlayerState::UP;
@@ -36,18 +66,19 @@ WebSocketInput::WebSocketInput() {
     echo.on_open=[this](shared_ptr<WsServer::Connection> connection) {
         cout << "Server: Opened connection " << (size_t)connection.get() << endl;
 
-        std::lock_guard<std::mutex> guard(lock);
-
-        char player = current_player;
-        players[(size_t)connection.get()] = player;
-        current_player++;
-
-        connected.push_back(player);
-
-        cout << "Server: Sending player id: " << player << endl;
-
         auto send_stream=make_shared<WsServer::SendStream>();
-        *send_stream << ("<img class='player' style='width:180px; height:180px;' src='/"+facePaths[faceIndex(player)]+"'>");
+
+        char player = findUnusedPlayerId();
+        if (!player) {
+            *send_stream << ("Player limit reached :(");
+        } else {
+            std::lock_guard<std::mutex> guard(lock);
+            players[(size_t)connection.get()] = player;
+            connected.push_back(player);
+            cout << "Server: Sending player id: " << player << endl;
+            *send_stream << ("<img class='player' style='width:180px; height:180px;' src='/"+facePaths[faceIndex(player)]+"'>");
+        }
+
         //server.send is an asynchronous function
         server.send(connection, send_stream, [](const boost::system::error_code& ec){
             if(ec) {
@@ -62,9 +93,12 @@ WebSocketInput::WebSocketInput() {
     echo.on_close=[this](shared_ptr<WsServer::Connection> connection, int status, const string& /*reason*/) {
         cout << "Server: Closed connection " << (size_t)connection.get() << " with status code " << status << endl;
         std::lock_guard<std::mutex> guard(lock);
-        char player = players[(size_t)connection.get()];
-        players.erase((size_t)connection.get());
-        disconnected.push_back(player);
+        auto it = players.find((size_t)connection.get());
+        if (it != players.end()) {
+            char player = it->second;
+            players.erase((size_t)connection.get());
+            disconnected.push_back(player);
+        }
     };
 
     //See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
@@ -72,9 +106,12 @@ WebSocketInput::WebSocketInput() {
         cout << "Server: Error in connection " << (size_t)connection.get() << ". " <<
                 "Error: " << ec << ", error message: " << ec.message() << endl;
         std::lock_guard<std::mutex> guard(lock);
-        char player = players[(size_t)connection.get()];
-        players.erase((size_t)connection.get());
-        disconnected.push_back(player);
+        auto it = players.find((size_t)connection.get());
+        if (it != players.end()) {
+            char player = it->second;
+            players.erase((size_t)connection.get());
+            disconnected.push_back(player);
+        }
     };
 
     server_thread = new thread([this](){

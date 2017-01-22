@@ -11,6 +11,7 @@
 
 using namespace std;
 Window* window;
+Emyl::Music music;
 
 int main() {
     string assetPath = findAssetPath();
@@ -20,7 +21,7 @@ int main() {
         webassets["/"+s] = assetPath+s;
     }
     WebServer web(webassets);
-    WebSocketInput input;
+    WebSocketInput input(facePaths.size());
 
     // Create screen
     ContextSettings settings;
@@ -30,7 +31,6 @@ int main() {
 
     loadAssets();
 
-    Emyl::Music music;
     music.openFromFile(assetPath+"DJ_Paternoster_-_03_-_Emotion.ogg");
     music.play();
 

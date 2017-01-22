@@ -130,8 +130,8 @@ void GameScene::draw() {
     if (players.empty()) camera.y = 1000;
 
     float dist = max(abs(br.x-tl.x),abs(br.y-tl.y));
-    dist /=2.2;
-    dist = max(dist , 30.f);
+    dist /=2.3;
+    dist = max(dist , 16.f);
     projection = glm::scale(mat3f(1.f), vec2f(1/(aspect*dist), 1/dist));
     projection = glm::translate(projection, -camera);
 
@@ -144,26 +144,25 @@ void GameScene::draw() {
         drawQuad(*face, vec2f(0.f,-4.5f), fmin(winScreenTimer/2.f, 8.f), -(float)winScreenTimer/50.f);
         drawQuad(*winnerTexture, vec2f(0.f,6.f), fmin(winScreenTimer/20.f, 1.5f), sin(winScreenTimer/15.f)/6.f);
     } else {
+        projection = glm::translate(mat3f(1.f), vec2f(-1,1));
+        projection = glm::scale(projection, vec2f(1/(aspect), 1));
         float y = 0;
         for (auto it : players) {
             Player *p = it.second;
             float progress = p->score/(float)TARGET_SCORE;
             Texture2D* face = faces[faceIndex(p->letter)];
 
-            projection = glm::translate(mat3f(1.f), vec2f(-1,1));
-            projection = glm::scale(projection, vec2f(1/(aspect), 1));
+            drawQuad(*face, vec2f(0.17f,-0.17f - y), 0.1f, -(float)winScreenTimer/40.f);
 
-            drawQuad(*face, vec2f(0.2f,-0.2f - y), 0.1f, -(float)winScreenTimer/40.f);
-
-            vec2f begin(0.35f, -0.16f - y);
-            vec2f endDone(0.35f + (0.5f*progress), -0.24f - y);
-            vec2f endTotal(0.35f + (0.5f), -0.24f - y);
-            vec4f colorDone(0.2f,0.9f,0.2f,1.f);
-            vec4f colorTotal(0.9f,0.9f,0.9f,1.f);
+            vec2f begin(0.32f, -0.13f - y);
+            vec2f endDone(0.32f + (0.5f*progress), -0.21f - y);
+            vec2f endTotal(0.32f + (0.5f), -0.21f - y);
+            vec4f colorDone(0.1f,0.8f,0.1f,0.8f);
+            vec4f colorTotal(0.9f,0.9f,0.9f,0.5f);
             drawRect(colorTotal, begin, endTotal);
             drawRect(colorDone, begin, endDone);
 
-            y += 0.2;
+            y += 0.19;
         }
 
     }

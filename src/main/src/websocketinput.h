@@ -15,7 +15,7 @@ public:
         DOWN
     };
 
-    WebSocketInput();
+    WebSocketInput(int maxPlayers);
     ~WebSocketInput();
 
 	std::vector<char> getPlayers() {
@@ -47,6 +47,9 @@ public:
     }
 
 private:
+    char findUnusedPlayerId();
+
+    int maxPlayers;
 	std::mutex lock;
     typedef SimpleWeb::SocketServer<SimpleWeb::WS> WsServer;
     WsServer server;
@@ -55,6 +58,5 @@ private:
     std::map<char, PlayerState> playerState;
     std::vector<char> connected;
     std::vector<char> disconnected;
-    char current_player = 'A';
 
 };
