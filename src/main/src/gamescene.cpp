@@ -2,6 +2,8 @@
 #include "groundactor.h"
 #include "player.h"
 #include "assets.h"
+#include <algorithm>    // std::shuffle
+#include <random>       // std::default_random_engine
 
 const float INITIAL_HEIGHT = 25.f;
 const int TARGET_SCORE = 60*30;
@@ -19,28 +21,20 @@ GameScene::GameScene(WebSocketInput* i)
     particles = new ParticleSystem(this);
     addActor(particles);
 
+    vector<char> existingPlayers = input->getPlayers();
+    shuffle(existingPlayers.begin(), existingPlayers.end(), default_random_engine(time(NULL)));
     int x = 0;
-    for (char c :  input->getPlayers()){
+    for (char c : existingPlayers){
         cout << "Recovering player " << c << endl;
-        vec2f pos(x++, INITIAL_HEIGHT);
+        vec2f pos(x, INITIAL_HEIGHT);
         Player* p = new Player(this, c, pos);
         addActor(p);
         players[c] = p;
+        x+=3;
     }
 }
 
 void GameScene::update() {
-    tl=vec2f(999999999.f,999999999.f);
-    br=vec2f(-999999999.f,-999999999.f);
-    for (auto p : players) {
-        auto pos = p.second->getPosition();
-        tl.x = min(tl.x, pos.x);
-        tl.y = min(tl.y, pos.y);
-        br.x = max(br.x, pos.x);
-        br.y = max(br.y, pos.y);
-    }
-    center = tl+((br-tl)/2.f);
-
     ground->load(center.x);
 
     if(Keyboard::justPressed(Keyboard::Return)){
@@ -85,6 +79,23 @@ void GameScene::update() {
         }
     }
 
+    if (players.empty()) {
+        center = vec2f(0.f,0.f);
+    } else {
+        tl=vec2f(999999999.f,999999999.f);
+        br=vec2f(-999999999.f,-999999999.f);
+        for (auto p : players) {
+            auto pos = p.second->getPosition();
+            tl.x = min(tl.x, pos.x);
+            tl.y = min(tl.y, pos.y);
+            br.x = max(br.x, pos.x);
+            br.y = max(br.y, pos.y);
+        }
+        center = tl+((br-tl)/2.f);
+
+    }
+
+
     winScreenTimer++;
     if (winner) {
         if (winScreenTimer > WIN_SCREEN_DURATION) {
@@ -115,11 +126,14 @@ void GameScene::draw() {
     quadMesh.draw(quadShader);
 
     //Camera hacks
+    vec2f camera = center;
+    if (players.empty()) camera.y = 1000;
+
     float dist = max(abs(br.x-tl.x),abs(br.y-tl.y));
     dist /=2.2;
-    dist = max(dist , 14.f);
+    dist = max(dist , 30.f);
     projection = glm::scale(mat3f(1.f), vec2f(1/(aspect*dist), 1/dist));
-    projection = glm::translate(projection, -center);
+    projection = glm::translate(projection, -camera);
 
     Scene::draw();
 

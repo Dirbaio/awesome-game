@@ -7,6 +7,8 @@ const float CHUNK_RESOLUTION = 0.1f;
 const float CHUNK_DEEP = 500;
 const int GROUND_LEN = 32;
 
+const int CLIFF_LIMIT_X = 5000;
+const float CLIFF_SLOPE = 0.05;
 
 class GroundChunk {
 public:
@@ -21,7 +23,14 @@ public:
         float wave = 0;
         wave += pn->noise(x*0.0033f, 0.5, 0.5)*28.f;
         //wave += sin(x*0.008);
-        wave += x*0.0025; //it's actually uphill XD
+
+        float cliff_impact = (CLIFF_LIMIT_X-x)/float(CLIFF_LIMIT_X);
+        if (x < CLIFF_LIMIT_X/2) {
+            wave -= x*CLIFF_SLOPE*cliff_impact;
+        } else {
+            wave -= CLIFF_SLOPE*CLIFF_LIMIT_X/4;
+        }
+
         return wave;
     }
 
