@@ -19,6 +19,7 @@ public:
     int inground;
     int jumping;
     b2Vec2 normal;
+    vec2f oldPos;
 };
 
 

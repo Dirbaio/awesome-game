@@ -88,6 +88,30 @@ void Player::update() {
     float communism = 35.f;
     communism += fabs(distance*10.f);
     body->ApplyForceToCenter(b2Vec2(communism,0.f), true);
+
+    static vec4f cols[] = {
+        vec4f(1, 0, 0, 1),
+        vec4f(1, 1, 0, 1),
+        vec4f(0, 1, 0, 1),
+        vec4f(0, 1, 1, 1),
+        vec4f(0, 0, 1, 1),
+    };
+
+    vec2f pos = getPosition();
+    for(float j = 0; j < 1; j+=0.1) {
+        for(int i = 0; i < 5; i++) {
+            Particle p;
+            p.startCol = p.endCol = cols[i];
+            p.endCol.a = 0;
+            p.startSize = 0.3;
+            p.endSize = 0;
+            p.life = 1;
+            p.p = pos * j + oldPos * (1-j);
+            p.p.y += (i-2) * 0.3;
+            scene->particles->addParticle(p);
+        }
+    }
+    oldPos = pos;
 }
 
 void Player::draw() {
@@ -97,7 +121,7 @@ void Player::draw() {
     vec2f squashDir(normal.x, normal.y);
     float squash = 1.f;
     squash += sin(jumping*0.4)*exp(-jumping*0.07) * 0.4f;
-    squash += sin(inground*0.5)*exp(-inground*0.12) * 0.2f;
+    squash -= sin(inground*0.5)*exp(-inground*0.12) * 0.2f;
     if(input == WebSocketInput::DOWN)
         squash -= 0.16;
 
