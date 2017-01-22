@@ -31,14 +31,14 @@ public:
         , pn(_pn)
     {
 
-        heights.resize(CHUNK_SIZE+1);
-        for(int i = 0 ; i < CHUNK_SIZE+1; i++) {
+        heights.resize(CHUNK_SIZE+2);
+        for(int i = 0 ; i < CHUNK_SIZE+2; i++) {
             int x = i + pos * CHUNK_SIZE;
             heights[i] = calcHeight(x);
         }
 
         vector<vec3f> data;
-        for(int i = 0 ; i < CHUNK_SIZE; i++) {
+        for(int i = 0 ; i < CHUNK_SIZE+1; i++) {
             data.push_back(vec3f((i+0)*CHUNK_RESOLUTION, heights[i]-CHUNK_DEEP, 1));
             data.push_back(vec3f((i+1)*CHUNK_RESOLUTION, heights[i+1]-CHUNK_DEEP, 1));
             data.push_back(vec3f((i+1)*CHUNK_RESOLUTION, heights[i+1], 0));
@@ -56,7 +56,7 @@ public:
         mesh.setPrimitiveType(Mesh::TRIANGLES);
 
         vector<b2Vec2> v;
-        for(int i = 0 ; i < CHUNK_SIZE+1; i++) {
+        for(int i = 0 ; i < CHUNK_SIZE+2; i++) {
             v.push_back(b2Vec2((pos*CHUNK_SIZE+i)*CHUNK_RESOLUTION, heights[i]));
         }
         b2ChainShape chain;
