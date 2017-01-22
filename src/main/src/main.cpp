@@ -49,6 +49,10 @@ int main() {
             window->setDisplayMode(Window::getFullscreenModes()[0]);
         if(Keyboard::pressed(Keyboard::W))
             window->setDisplayMode(Window::DisplayMode::createWindowedMode(800, 600));
+        if(Keyboard::pressed(Keyboard::M))
+                music.stop();
+        if(Keyboard::pressed(Keyboard::N))
+                music.play();
 
         s->update();
 
