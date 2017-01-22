@@ -12,6 +12,10 @@ public:
     Player(GameScene* scene, char letter, vec2f pos);
     void update();
     void draw();
+
+    int notinground;
+    int jumping;
+    b2Vec2 normal;
 };
 
 

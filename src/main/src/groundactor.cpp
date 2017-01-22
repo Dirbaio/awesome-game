@@ -21,7 +21,7 @@ public:
         float wave = 0;
         wave += pn->noise(x*0.0033f, 0.5, 0.5)*28.f;
         //wave += sin(x*0.008);
-        //wave -= x*0.010;
+        wave += x*0.0025; //it's actually uphill XD
         return wave;
     }
 
